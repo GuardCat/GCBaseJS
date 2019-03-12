@@ -53,9 +53,9 @@ mygoods: {
 	]
 }
 ```
-###Keys formats description
+### Keys formats description
 
-####type: auto
+#### type: auto
 
 Поле с автоинкрементом по добавлению записи.
 Обязательные сопутствующие поля:
@@ -64,9 +64,9 @@ mygoods: {
 Оба сопутствующих поля заполняются автоматически.
 Всегда начинается с нуля.
 
-####type: link
-####type: qlink
-####type: text
-####type: date
-####type: formula
-####type: flag
+#### type: link
+#### type: qlink
+#### type: text
+#### type: date
+#### type: formula
+#### type: flag
