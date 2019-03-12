@@ -80,7 +80,7 @@ mygoods: {
 
 #### type: qlink
 **обязательные сопутствующие поля**
-* **format
+* **format**
 #### type: text
 #### type: date
 #### type: formula
