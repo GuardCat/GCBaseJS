@@ -9,4 +9,14 @@ Specification
 
 Database main object description
 -------------
-Описание
+Основной объект базы данных содержит специальный ключ:
+__data. Этот ключ содержит объект, который описывает базу данных: 
+имя, версия краткое описание. Все — текст.
+
+```javascript
+__data: {
+	name: "myBase",
+	version: "1.0",
+	description: "A little db for some practice"
+}
+```
