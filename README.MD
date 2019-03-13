@@ -106,5 +106,16 @@ mygoods: {
 #### type: integer
 #### type: float
 
+Description of mechanics GCBase class
+================
+
+
 Userguide for GCBase class
 ================
+Далее считаем basе экземпляром класса GCBase.
+
+Создание БД
+------------
+let base = new GCBase( {name: "customersBase", version: "0.1a", description: "База данных продуктов, клиентов и покупок"});
+
+Создание БД методами экземпляра GCBase не предусмотрено.
