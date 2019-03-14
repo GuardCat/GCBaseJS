@@ -244,7 +244,25 @@ base.reload();
 base.table("customers").getAll(fn);
 ```
 
-Более подробно см. в разделе "table Object: tables management"
+Более подробно см. в разделе "Queries"
+
+
+Queries
+=======
+Все запросы начинаются с метода table, которому передается имя таблицы. У возвращаемого методом объекта есть 
+следующие методы:
+
+* (-) getBy(colname, filterfn | value ***strict equal***)
+* (-) getAllBy(colname, filterfn | value ***strict equal***)
+* (-) get(filterfn) 
+* (-) rename(string: new name) rename table
+* (-) add(object: table row | array: table rows)
+* (-) remove( colname, [filterfn | value ***strict equal***] ) will remove the whole column if don't recieve the second parameter.
+* (-) addColumn(colname, object: description of the format for __captions
+* (-) change(filterfn, changefn) prohibit to change link and qlink columns 
+
+
+
 
 Features in progress
 ====================
