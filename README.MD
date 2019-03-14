@@ -222,4 +222,14 @@ base.drop("customers")
 ```
 Если на таблицу есть ссылки из других таблиц, будет брошено исключение "GCBase drop table error: the table has links from the another tables. Remove links first.".
 
-### save: Сохраняет БД в LS.
+### save: Сохраняет БД в LS
+```javascript
+base.save();
+```
+
+### reload: Загружает БД из LS
+Текущая БД удаляется без сохранения, все данные загружаются из LS.
+При отсутствии БД с соответствующим именем в LS, бросает исключение.
+```javascript
+base.reload();
+```
