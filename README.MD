@@ -233,3 +233,5 @@ base.save();
 ```javascript
 base.reload();
 ```
+
+### table: Возвращает объект table
