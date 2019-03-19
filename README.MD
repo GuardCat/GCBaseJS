@@ -103,6 +103,14 @@ format: string
 Возможные поля:
 * **unique:** true | false.
 
+#### type: text/html
+Текстовое поле c html-тегами.
+обязательные поля: нет.
+Автоматически устанавливается 
+```javascript
+format: string
+```
+
 #### type: date
 Дата в формате js Date. Хранится как число. 
 Обязательные поля:
