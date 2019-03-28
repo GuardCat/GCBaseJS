@@ -16,26 +16,30 @@ Specification
 
 Database main object description
 -------------
-Основной объект базы данных содержит специальный ключ:
-__data, являющийся обязательным.
-Остальные ключи в основном объекте — таблицы БД.
+Основной объект базы данных содержит обзательные специальные ключи:
+__data
+__tables
+и геттер about
 
 Ключ __data содержит объект, который описывает базу данных: 
-имя, версия краткое описание. Все — текст.
+имя, версия краткое описание. 
+version — числовое поле, допустимо дробное и отрицательное значения, два других — текстовые.
 
 ```javascript
 __data: {
     name: "goodsBase",
-    version: "0.1a",
+    version: 1,
     description: "База данных продуктов, клиентов и покупок"
 } 
 ```
+
+Ключ __tables — объект, ключи которого — имена таблиц.
 
 Tables description
 ------------------
 Таблица — объект, содержащий специальный ключ __captions, 
 являющийся обязательным, в объекте по этому ключу описывается каждое поле таблицы: его тип и доп. информация, нужная для работы с полем. 
-Таблица также содержит обязательный ключ rows с массивом объектов — данные таблицы. Если таблица пуста, rows содержит пустой массив.
+Таблица также содержит обязательный ключ __rows с массивом объектов — данные таблицы. Если таблица пуста, rows содержит пустой массив.
 
 ```javascript
 customers: {
@@ -50,7 +54,7 @@ customers: {
             type: "text"
         }
     },
-    rows: [
+    __rows: [
         {id: 0, name: "Петров Сергей Иванович"}
     ]
 }
@@ -157,14 +161,14 @@ Userguide for GCBase class
 
 ```javascript
 //Case #1 example
-let base = new GCBase( {name: "customersBase", version: "0.1a", description: "База данных продуктов, клиентов и покупок"});
+let base = new GCBase( {name: "customersBase", version: 1, description: "База данных продуктов, клиентов и покупок"});
 ```
 
 ```javascript
 //Case #2 example
 let base = new GCBase( 
 `{
-    __data: {name: "goodsBase", version: "0.1a", description: "База данных продуктов, клиентов и покупок"}, 
+    __data: {name: "goodsBase", version: 1, description: "База данных продуктов, клиентов и покупок"}, 
     
     customers: {
         __captions: {
@@ -197,7 +201,7 @@ let base = new GCBase(
     GCBase.exists("myBase"); // true | false
 ```
 
-### check: проверяет валидность строки или объекта на соответствие требованиям БД
+### check: проверяет валидность базы данных в формате строки или объекта на соответствие требованиям БД
 ```javascript
     GCBase.check(myBase); // errors log or true
 ```
@@ -205,14 +209,22 @@ let base = new GCBase(
 
 Методы экземпляра класса
 ------------------------
+### setVersion: установить новую версию Базы данных
+```javascript
+base.setVersion(2);
+```
+Аргумент должен быть валидным числом и превосходить текущий номер БД.
 
-### add: Создание таблицы
+### about
+Геттер, возвращает копию объекта base.__data
 
-Метод add принимает объект, описывающий столбцы (поля) таблицы, с указанием обязательных элементов
+### addTable: Создание таблицы
+
+Метод addTable принимает объект, описывающий столбцы (поля) таблицы, с указанием обязательных элементов
 описания, значение которых не выставляется автоматически (см. "Keys formats description").
 
 ```javascript
-base.add("customers", { 
+base.addTable("customers", { 
 	id: {
 		type: "auto"
 	},
@@ -223,11 +235,11 @@ base.add("customers", {
 );
 ```
 
-### drop: Удаление таблицы
+### dropTable: Удаление таблицы
 Метод принимает имя таблицы для удаления.
 
 ```javascript
-base.drop("customers")
+base.dropTable("customers")
 ```
 Если на таблицу есть ссылки из других таблиц, будет брошено исключение "GCBase drop table error: the table has links from the another tables. Remove links first.".
 
@@ -258,20 +270,24 @@ base.table("customers").getAll(fn);
 
 Queries
 =======
-Все запросы начинаются с метода table, которому передается имя таблицы. У возвращаемого методом объекта есть 
+Все запросы, работающие с существующими таблицами, начинаются с метода table, которому передается имя таблицы. У возвращаемого методом объекта есть 
 следующие методы:
 
 * (-) getBy(colname, filterfn | value ***strict equal***)
 * (-) getAllBy(colname, filterfn | value ***strict equal***)
 * (-) get(filterfn) 
 * (-) rename(string: new name) rename table
-* (-) add(object: table row | array: table rows)
-* (-) remove( colname, [filterfn | value ***strict equal***] ) will remove the whole column if don't recieve the second parameter.
+* (-) addRow(object: table row | array: table rows)
+* (-) removeColumn( colname, [filterfn | value ***strict equal***] ) will remove the whole column if don't recieve the second parameter.
 * (-) addColumn(colname, object: description of the format for __captions
 * (-) change(filterfn, changefn) prohibit to change link and qlink columns 
 
+**Table management**
+* (-) base.addTable(text: name, object: описание заголовков в формате captions.)
+* (-) base.dropTable(text: name)
 
-
+**Database management**
+* (-) base.about геттер, возвращает копию объекта base.__data
 
 Features in progress
 ====================
