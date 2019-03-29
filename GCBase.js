@@ -11,10 +11,10 @@ class GCBase {
 			}
 
 		/*
-		 Если передан объект, считаем, что это заголовок новой БД.
+		 Если передан объект, проверяем, это заголовок новой БД или БД целиком
 		*/
 		} else if (typeof income === "object") {
-			if (!GCBase.checkData(income)) throw new Error("GCBase constructor error: wrong database ")
+			if (!GCBase.checkDBData(income)) throw new Error("GCBase constructor error: wrong database ")
 			this.__data = Object.assign({}, income);
 		
 		} else {
@@ -36,7 +36,7 @@ class GCBase {
 	/*
 		Проверяет объект на соответствие формату __data
 	*/
-	static checkData(data) {
+	static checkDBData(data) {
 		if (!data || !(data.name && data.version && data.description) ) return false;
 		if ( !(typeof data.version === "number") ) return false;
 		return true
