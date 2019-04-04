@@ -14,16 +14,23 @@ class GCBase {
 		 Если передан объект, проверяем, это заголовок новой БД или БД целиком
 		*/
 		} else if (typeof income === "object") {
-			if (!GCBase.checkDBData(income)) throw new Error("GCBase constructor error: wrong database ")
-			this.__data = Object.assign({}, income);
+			
+			if (GCBase.checkDBData(income)) {
+				this.__data = Object.assign({}, income);
+			} else if (GCBase.checkDB(income)) {
+				this.__data = Object.assign({}, income.__data);
+				this.__tables = Object.assign({}, income.__tables);
+			} else {
+				throw new Error("GCBase constructor error: wrong database ");
+			}			
 		
 		} else {
-			throw new Error("GCBase constructor error: wrong incoming parameter")
+			throw new Error("GCBase constructor error: wrong incoming parameter");
 		}
 	}
 	
 	addTable(name,captions) {
-		if (!name) throw new Error("GCBase addTable: wrong name")
+		if (!name) throw new Error("GCBase addTable: wrong name");
 		if (!GCBase.checkCaptions(captions)) throw new Error("GCBase addTable: wrong captions");
 		this.__tables[name.toString()].__captions = Object.assign({}, captions);
 		this.__tables[name.toString()].__rows = [ ];	
@@ -39,7 +46,12 @@ class GCBase {
 	static checkDBData(data) {
 		if (!data || !(data.name && data.version && data.description) ) return false;
 		if ( !(typeof data.version === "number") ) return false;
-		return true
+		return true;
+	}
+
+	static checkDB(data) {
+		if (!data || !(data.__data && data.__tables) ) return false;
+		return true;
 	}
 	
 	/*
@@ -48,7 +60,7 @@ class GCBase {
 	*/
 	static checkCaptions(captions) {
 		if ( !(captions instanceof Object) ) return false;
-		return true
+		return true;
 	}
 	
 }
