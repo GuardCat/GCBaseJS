@@ -36,6 +36,7 @@ class GCBase {
 		this.__tables[name.toString()].__rows = [ ];	
 	}
 	
+	
 	get about() {
 		return Object.assign({}, this.__data);
 	}
