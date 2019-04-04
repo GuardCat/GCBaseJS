@@ -44,13 +44,13 @@ class GCBase {
 		Проверяет объект на соответствие формату __data
 	*/
 	static checkDBData(data) {
-		if (!data || !(data.name && data.version && data.description) ) return false;
+		if ( !(data && data.name && data.version && data.description) ) return false;
 		if ( !(typeof data.version === "number") ) return false;
 		return true;
 	}
 
 	static checkDB(data) {
-		if (!data || !(data.__data && data.__tables) ) return false;
+		if ( !(data && data.__data && data.__tables) ) return false;
 		return true;
 	}
 	
