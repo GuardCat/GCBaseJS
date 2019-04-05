@@ -38,7 +38,7 @@ class GCBase {
 	
 	table(name) {
         
-    }
+ }
 	
 	get about() {
         let obj = {};

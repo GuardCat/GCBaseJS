@@ -10,7 +10,44 @@
 
 	<script src = "GCBase.js"></script>
 	<script>
-	let base = new GCBase({name: "Pets", version: 1, description: "Database of pets and their owners."});
+	let 
+		base = new GCBase({name: "Pets", version: 1, description: "Database of pets and their owners."}),
+		
+		petsCaptions = {
+			id: {
+    type: "auto"
+			},
+
+			petType: {
+				type: "text"
+			},
+
+			needs: {
+				type: "text"
+			}
+		},
+
+		ownersCaptions = {
+			id: {
+ 			type: "auto"
+			},
+
+			name: {
+				type: "text"
+			}
+		},
+
+		purchasesCaptions = {
+			id: {
+ 			type: "auto"
+			},
+			date: {
+				type: "date",
+				format: {day: "numeric", month: "long", year: "numeric"}
+			}
+		}
+;
+
 
 	alert(base.about);
 
