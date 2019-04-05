@@ -201,11 +201,15 @@ let base = new GCBase(
     GCBase.exists("myBase"); // true | false
 ```
 
-### check: проверяет валидность базы данных в формате строки или объекта на соответствие требованиям БД
+### checkDB: проверяет валидность базы данных в формате объекта на соответствие требованиям БД
 ```javascript
-    GCBase.check(myBase); // errors log or true
+    GCBase.checkDB(myBase); // true / false
 ```
-В текущей версии не реализовано.
+
+### checkDBData: проверяет валидность заголовк базы данных в формате объекта на соответствие структуре __data
+```javascript
+    GCBase.checkDBDate(myBase); // true / false
+```
 
 Методы экземпляра класса
 ------------------------
