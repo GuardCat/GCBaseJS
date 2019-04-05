@@ -36,8 +36,14 @@ class GCBase {
 		this.__tables[name.toString()].__rows = [ ];	
 	}
 	
+	table(name) {
+        
+    }
+	
 	get about() {
-		return Object.assign({}, this.__data);
+        let obj = {};
+        obj.toString = ( ( ) => `${this.__data.name} v${this.__data.version}: ${this.__data.description}` ).bind(this);
+		return Object.assign(obj, this.__data);
 	}
 	
 	/*
@@ -49,6 +55,9 @@ class GCBase {
 		return true;
 	}
 
+	/*
+		Проверяет экземпляр базы на соответствие формату
+	*/
 	static checkDB(data) {
 		if ( !(data && data.__data && data.__tables) ) return false;
 		return true;
