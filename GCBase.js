@@ -89,7 +89,8 @@ class GCBase {
             	break;
 
 			case "date":
-
+				if ( !(result.format && result.format instanceof Object) ) throw new Error("GCBase addTable: wrong date format");
+				break;
 
             default:
 				throw new Error(`GCBase addTable: unknown caption type: ${result.type}`);
