@@ -41,7 +41,7 @@ class GCBase {
 		if (!name) throw new Error("GCBase addTable: wrong name");
 		if (!GCBase.checkCaptions(captions)) throw new Error("GCBase addTable: wrong captions");
         name = name.toString( );
-		if (this.__tables[name]) throw new Error("GCBase addTable: table alredy exists");
+		if (this.hasTable(name)) throw new Error("GCBase addTable: table alredy exists");
         
         this.__tables[name] = {};
 		this.__tables[name].__captions = this.loadCaptions(captions);
@@ -49,7 +49,8 @@ class GCBase {
 	}
 	
 	table(name) {
-        
+        if (!this.hasTable(name)) throw new Error(`GCBase get table: table doesn't exist: ${name}.`);
+        return new GCBase(this.__tables[name]);
     }
 
     /*
@@ -58,48 +59,14 @@ class GCBase {
     loadCaptions(captions) {
 		let result = {}, key;
 		for (key in captions) {
-			result = Object.assign({}, this.checkAndFixCaption(captions[key]));
+			result = Object.assign({}, GCBase.checkAndFixCaption(captions[key]));
 		}
 		return result;
 	}
 
-    /* 
-     * Проверяет заголовок таблицы (один конкретный столбец) 
-     * @param {object} caption — заголовок одного столбца
-     * @return {object} дополненная копия заголовка
-     * @throws отсутствие обязательных полей, не проставляемых автоматически, некорректный формат, неизвестный формат
-     */
-    checkAndFixCaption(caption) {
-        if( !(caption && caption instanceof Object && caption.type) ) throw new Error("GCBase addTable: wrong captions");
-        let result = Object.assign({}, caption);
-
-        switch (result.type) {
-            case "text":
-                result.format = "string";
-                break;
-            
-            case "auto":
-                result.format = "integer";
-                result.unique = true;
-                result.next = 0;
-                break;
-            
-            case "link":
-            	if ( !(result.data && result.multiply && result.to && result.table)) throw new Error("GCBase addTable: wrong link caption");
-            	break;
-
-			case "date":
-				if ( !(result.format && result.format instanceof Object) ) throw new Error("GCBase addTable: wrong date format");
-				break;
-
-            default:
-				throw new Error(`GCBase addTable: unknown caption type: ${result.type}`);
-				break;
-		};
-        return result;
-    }
-
-    hasTable
+    hasTable(tableName) {
+    	return tableName in this.__tables;
+	}
 
     get about() {
         let obj = {};
@@ -107,6 +74,42 @@ class GCBase {
 		return Object.assign(obj, this.__data);
 	}
 
+
+	/*
+     * Проверяет заголовок таблицы (один конкретный столбец)
+     * @param {object} caption — заголовок одного столбца
+     * @return {object} дополненная копия заголовка
+     * @throws отсутствие обязательных полей, не проставляемых автоматически, некорректный формат, неизвестный формат
+     */
+	static checkAndFixCaption(caption) {
+		if( !(caption && caption instanceof Object && caption.type) ) throw new Error("GCBase addTable: wrong captions");
+		let result = Object.assign({}, caption);
+
+		switch (result.type) {
+			case "text":
+				result.format = "string";
+				break;
+
+			case "auto":
+				result.format = "integer";
+				result.unique = true;
+				result.next = 0;
+				break;
+
+			case "link":
+				if ( !("data" in result && "multiply" in result && "to" in result && "table" in result) ) throw new Error("GCBase addTable: wrong link caption");
+				break;
+
+			case "date":
+				if ( !(result.format && result.format instanceof Object) ) throw new Error("GCBase addTable: wrong date format");
+				break;
+
+			default:
+				throw new Error(`GCBase addTable: unknown caption type: ${result.type}`);
+				break;
+		};
+		return result;
+	}
 
 	/*
 		Проверяет объект на соответствие формату __data
@@ -135,8 +138,15 @@ class GCBase {
 	}
 	
 }
+
+class GCTable {
+	constructor(table) {
+		this.__table = table;
+	}
+}
+
 /* TODO:
-Проверка корректности captions
+класс таблиц
 Добавление записи: проверка формата записи
 Извлечение записи со ссылкой.
 */
