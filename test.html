@@ -46,9 +46,11 @@ let
             format: {day: "numeric", month: "long", year: "numeric"}
         },
 		owner: {
-        	type: "link",
-			multiply: false,
-			to: "owners:id"
+        	type:		"link",
+			multiply:	false,
+			table:		"owners",
+			to: 		"id",
+			data:		"name"
 		}
     }
 ;

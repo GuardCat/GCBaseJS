@@ -85,7 +85,7 @@ class GCBase {
                 break;
             
             case "link":
-            	if ( !(result.data && result.multiply && result.to)) throw new Error("GCBase addTable: wrong link caption");
+            	if ( !(result.data && result.multiply && result.to && result.table)) throw new Error("GCBase addTable: wrong link caption");
             	break;
 
 			case "date":
