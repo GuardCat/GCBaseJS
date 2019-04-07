@@ -199,16 +199,23 @@ class GCTable {
 		} else {
 			targetCaption = this.base.__tables[caption.table].__captions[caption.data];
 			result = targetCaption.type === "link" ? this.__valFromLink(targetCaption, row[caption.data]) : row[caption.data];
-        }
+		}
         
 		return result;
-    }
+		}
 	
 	static checkRow(row, captions) {
-		if (Object.keys(row).length !== Object.keys(captions).length) return "The number of key in row and in captions doesn't match";
+	  let length = Object.keys(row).length;
 		for (let i in row) {
 			if ( !(i in captions) ) return `Unknown key in row: ${i}`;
 		}
+		for (let i in captions) {
+			if (captions[i].type === "auto") {
+				row[i] === captions[i].next;
+				captions[i].next++
+			}
+		}
+		if (Object.keys(row).length !== Object.keys(captions).length) return "The number of key in row and in captions doesn't match";
 		return true;
 	}
 }
