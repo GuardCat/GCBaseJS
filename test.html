@@ -14,39 +14,30 @@ let
 	base = new GCBase({name: "Pets", version: 1, description: "Database of pets and their owners."}),
 
 	petsCaptions = {
-		id: {type: "auto"},
-		
+		id:		{type: "auto"},
+		name:	{type: "text"},
 		petType: {
-			type:		"link",
-			table:		"petTypes",
-			to: 		"id",
-			data:		"name;needs"
-		},
-
-		name: {type: "text"}
+			type:	"link",
+			table:	"petTypes",
+			to: 	"id",
+			data:	"name;needs"
+		}
 	},
 	
-	petTypes = {
+	petTypesCaptions = {
 		id:		{type: "auto"},
 		name:	{type:	"text"},
 		needs:	{type: "text"}
 	},
 
 	ownersCaptions = {
-		id: {
-			type: "auto"
-		},
-
-		name: {
-			type: "text"
-		}
+		id:		{type: "auto"},
+		name:	{type: "text"};
 	},
 
 	purchasesCaptions = {
-		id: {
-			type: "auto"
-		},
-		date: {
+		id: 	{type: "auto"},
+		date:	{
 			type: "date",
 			format: {day: "numeric", month: "long", year: "numeric"}
 		},
@@ -55,12 +46,19 @@ let
 			table:		"owners",
 			to: 		"id",
 			data:		":all"
+		},
+		pet: {
+			type:		"link",
+			table:		"pets",
+			to: 		"id",
+			data:		":all"
 		}
 	}
 ;
 
 base.addTable("owners", ownersCaptions);
 base.addTable("pets", petsCaptions);
+base.addTable("petTypes", petTypesCaptions);
 base.addTable("purchases", purchasesCaptions);
 		
 base.table("pets").addRow({petType: "Рыбка", needs: "Water"});

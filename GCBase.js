@@ -166,6 +166,11 @@ class GCTable {
 		if (check !== true) throw new Error (`GCTable adding row: wrong row. ${check}`);
 		this.table.push(obj);
 	}
+	
+	addRows(arr) {
+		if (!(arr instanceof Array)) throw new Error (`GCTable adding rows array: wrong array.`);
+		arr.forEach( (i) => this.addRow(arr[i]) );
+	}
 	__fixRow(row) {
         let i, result = Object.assign({}, row);
         for (i in result) {

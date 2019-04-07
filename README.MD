@@ -268,7 +268,7 @@ base.hasTable("tablename");
 сгруппированные записи и т.д.
 
 ```javascript
-// Полуаем все записи из таблицы customers, для которых fn вернет true (строго)
+// Получаем все записи из таблицы customers, для которых fn вернет true (строго)
 base.table("customers").getAll(fn);
 ```
 
@@ -280,17 +280,18 @@ Queries
 Все запросы, работающие с существующими таблицами, начинаются с метода table, которому передается имя таблицы. У возвращаемого методом объекта есть 
 следующие методы:
 
-* (-) get(value) возвращает первую строку, совпавшую с запросом. Запрос может быть функцией или объектом: {columnName: "columnNamehere", value: "valueForStrictTesthere"};
-* (-) getAll(value) возвращает все строки, совпавшие с запросом. Запрос может быть функцией или объектом: {columnName: "columnNamehere", value: "valueForStrictTesthere"};
+* get(value) возвращает первую строку, совпавшую с запросом. Запрос может быть функцией или объектом: {columnName: "columnNamehere", value: "valueForStrictTesthere"};
+* getAll(value) возвращает все строки, совпавшие с запросом. Запрос может быть функцией или объектом: {columnName: "columnNamehere", value: "valueForStrictTesthere"};
+* addRow(object: table row)
+* addRows(array of rows)
 
 * (-) rename(string: new name) rename table
-* (-) addRow(object: table row | array: table rows)
 * (-) removeColumn( colname, [filterfn | value ***strict equal***] ) will remove the whole column if don't recieve the second parameter.
 * (-) addColumn(colname, object: description of the format for __captions
 * (-) change(filterfn, changefn) prohibit to change link and qlink columns 
 
 **Database management**
-* (-) base.about геттер, возвращает копию объекта base.__data
+* base.about геттер, возвращает копию объекта base.__data
 
 Features in progress
 ====================
