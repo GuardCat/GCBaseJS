@@ -78,12 +78,8 @@ customers: {
 * **table:** tablename имя таблицы для ссылки
 * **to:** colname имя столбца по которому ищем совпадения
 * **data:** (:all | colname | colname1;colname2...) (вся запись целиком | значение одного поля записи | набор полей, которые будут добавлены в возвращаемый объект)
-* **multiply:** true|false (возвращать первое поле как объект (false) или все записи в массиве (true)). 
-В содержимом поля link в таблице находится значение, по которому будет производиться поиск в целевой таблице.
 
-Если link указывает на поле с атрибутом unique: true, программа будет
-возвращать по ссылке одну запись (объект). В другом случае,
-вернет массив объектов, совпавших со значением colname параметра to.
+Если link указывает на поле с атрибутом unique: false, программа будет возвращать по ссылке первую запись (объект). 
 
 Не может содержать unique
 
@@ -91,7 +87,8 @@ customers: {
 Квазиссылка. Копирует фактическое значение по адресу из to, не следует по ссылкам.
 
 Обязательные поля
-* **to:** tablename~colname
+* **table:** tablename имя таблицы для ссылки
+* **to:** colname
 * **data:** colname
 * **format**: скопирует формат поля по ссылке, если есть, иначе текст.
 
@@ -218,7 +215,7 @@ let base = new GCBase(
 ```javascript
 base.setVersion(2);
 ```
-Аргумент должен быть валидным числом и превосходить текущий номер БД.
+Аргумент должен быть валидным числом и превосходить текущий номер версии БД или быть равным ему.
 
 ### about
 Геттер, возвращает копию объекта base.__data
@@ -283,18 +280,14 @@ Queries
 Все запросы, работающие с существующими таблицами, начинаются с метода table, которому передается имя таблицы. У возвращаемого методом объекта есть 
 следующие методы:
 
-* (-) getBy(colname, filterfn | value ***strict equal***)
-* (-) getAllBy(colname, filterfn | value ***strict equal***)
-* (-) get(filterfn) 
+* (-) get(value) возвращает первую строку, совпавшую с запросом. Запрос может быть функцией или объектом: {columnName: "columnNamehere", value: "valueForStrictTesthere"};
+* (-) getAll(value) возвращает все строки, совпавшие с запросом. Запрос может быть функцией или объектом: {columnName: "columnNamehere", value: "valueForStrictTesthere"};
+
 * (-) rename(string: new name) rename table
 * (-) addRow(object: table row | array: table rows)
 * (-) removeColumn( colname, [filterfn | value ***strict equal***] ) will remove the whole column if don't recieve the second parameter.
 * (-) addColumn(colname, object: description of the format for __captions
 * (-) change(filterfn, changefn) prohibit to change link and qlink columns 
-
-**Table management**
-* (-) base.addTable(text: name, object: описание заголовков в формате captions.)
-* (-) base.dropTable(text: name)
 
 **Database management**
 * (-) base.about геттер, возвращает копию объекта base.__data

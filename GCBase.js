@@ -53,7 +53,7 @@ class GCBase {
 	
 	table(name) {
         if (!this.hasTable(name)) throw new Error(`GCBase get table: table doesn't exist: ${name}.`);
-        return new GCBase(this.__tables[name]);
+        return new GCTable(this.__tables[name], this);
     }
 
     /*
@@ -62,7 +62,7 @@ class GCBase {
     loadCaptions(captions) {
 		let result = {}, key;
 		for (key in captions) {
-			result = Object.assign({}, GCBase.checkAndFixCaption(captions[key]));
+			result[key] = Object.assign({}, GCBase.checkAndFixCaption(captions[key]));
 		}
 		return result;
 	}
@@ -100,7 +100,7 @@ class GCBase {
 				break;
 
 			case "link":
-				if ( !("data" in result && "multiply" in result && "to" in result && "table" in result) ) throw new Error("GCBase addTable: wrong link caption");
+				if ( !("data" in result && "to" in result && "table" in result) ) throw new Error("GCBase addTable: wrong link caption");
 				break;
 
 			case "date":
@@ -142,14 +142,84 @@ class GCBase {
 }
 
 class GCTable {
-	constructor(table) {
-		this.__table = table;
+	constructor(table, base) {
+		this.table = table.__rows;
+		this.captions = table.__captions;
+		this.base = base;
+	}
+	
+	get(value) {
+		if (!this.table.length) return false;
+        if (!value) throw new Error(`GCTable: query without parameter.`);
+		let 
+			result, i, 
+			fn = typeof value === "function" ? value : function(rowNow) {return rowNow[value.columnName] === value.value;}
+        ;
+		for (i in this.table) {
+			if	( fn(this.table[i]) ) return this.__valFromLinkInRow(this.table[i]); 
+		}
+		return false;
+	}
+	
+	addRow(obj) {
+		let check =  GCTable.checkRow(obj, this.captions);
+		if (check !== true) throw new Error (`GCTable adding row: wrong row. ${check}`);
+		this.table.push(obj);
+	}
+	__valFromLinkInRow(row) {
+        let i, result = Object.assign({}, row);
+        for (i in result) {
+			if (this.captions[i].type === "link") {
+				result[i] = this.__valFromLink(this.captions[i], result[i]);
+			}
+		}
+		return result;
+    }
+    
+/* Заменяет ключи полей link на значения по соотв. адресу.
+ * Если в результате есть link, рекурсивно извлечет данные для него.
+ */
+    __valFromLink(caption, val) {
+        let 
+            row = this.base.table(caption.table).get({columnName: caption.to, value: val}),
+            names = caption.data.split(";"),
+            result = {},
+			targetCaption
+        ;
+        
+        if (caption.data === ":all") {
+            result = row;
+		} else if (names.length > 1) {
+			names.forEach( (i) => {
+				targetCaption = this.base.__tables[caption.table].__captions[i];
+				if (i !== "") {
+					result[i] = targetCaption.type === "link" ? this.__valFromLink(targetCaption, row[i]) : row[i];
+				}
+			});
+		} else {
+			targetCaption = this.base.__tables[caption.table].__captions[caption.data];
+			result = targetCaption.type === "link" ? this.__valFromLink(targetCaption, row[caption.data]) : row[caption.data];
+        }
+        
+		return result;
+    }
+	
+	static checkRow(row, captions) {
+		if (Object.keys(row).length !== Object.keys(captions).length) return "The number of key in row and in captions doesn't match";
+		for (let i in row) {
+			if ( !(i in captions) ) return `Unknown key in row: ${i}`;
+		}
+		return true;
 	}
 }
 
 /* TODO:
+при добавлении записи убрать из чексуммы столбцы с типом auto, записывать их автоматически
 класс таблиц
 Добавление записи: проверка формата записи
-Извлечение записи со ссылкой.
 */
 
+/* DONE
+ * исправить ошибку: при возврате строки не подставляются данные по ссылке
+ * Извлечение записи со ссылкой.
+*/
