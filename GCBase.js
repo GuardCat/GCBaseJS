@@ -1,3 +1,6 @@
+/*jshint esversion: 6 */
+
+
 /**
  * База данных
  * @constructor
@@ -106,8 +109,7 @@ class GCBase {
 
 			default:
 				throw new Error(`GCBase addTable: unknown caption type: ${result.type}`);
-				break;
-		};
+		}
 		return result;
 	}
 
@@ -116,7 +118,7 @@ class GCBase {
 	*/
 	static checkDBData(data) {
 		if ( !(data && data.name && data.version && data.description) ) return false;
-		if ( !(typeof data.version === "number") ) return false;
+		if ( typeof data.version !== "number" ) return false;
 		return true;
 	}
 
