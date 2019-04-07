@@ -16,10 +16,8 @@ class GCBase {
 			} else {
 				this.parse(income);			
 			}
-
-		/*
-		 Если передан объект, проверяем, это заголовок новой БД или БД целиком
-		*/
+		
+		/* Если передан объект, проверяем, это заголовок новой БД или БД целиком */
 		} else if (typeof income === "object") {
 			
 			if (GCBase.checkDBData(income)) {
@@ -30,53 +28,47 @@ class GCBase {
 				this.__tables = Object.assign({}, income.__tables);
 			} else {
 				throw new Error("GCBase constructor error: wrong database ");
-			}			
+			}	
 		
 		} else {
 			throw new Error("GCBase constructor error: wrong incoming parameter");
 		}
 	}
-	
-	/*
-     * Добавляем таблицу в экземпляр БД
-     */
+	/* Добавляем таблицу в экземпляр БД */
 	addTable(name, captions) {
 		if (!name) throw new Error("GCBase addTable: wrong name");
 		if (!GCBase.checkCaptions(captions)) throw new Error("GCBase addTable: wrong captions");
-        name = name.toString( );
+		name = name.toString( );
 		if (this.hasTable(name)) throw new Error("GCBase addTable: table alredy exists");
-        
-        this.__tables[name] = {};
+
+		this.__tables[name] = {};
 		this.__tables[name].__captions = this.loadCaptions(captions);
 		this.__tables[name].__rows = [ ];	
 	}
 	
 	table(name) {
-        if (!this.hasTable(name)) throw new Error(`GCBase get table: table doesn't exist: ${name}.`);
-        return new GCTable(this.__tables[name], this);
-    }
-
-    /*
-     * Прогоняет заголовки через проверку и дополнение, копирует их в новый объект.
-     */
-    loadCaptions(captions) {
+		if (!this.hasTable(name)) throw new Error(`GCBase get table: table doesnt exist: ${name}.`);
+		return new GCTable(this.__tables[name], this);
+	}
+	
+	/* Прогоняет заголовки через проверку и дополнение, копирует их в новый объект.*/
+	loadCaptions(captions) {
 		let result = {}, key;
 		for (key in captions) {
 			result[key] = Object.assign({}, GCBase.checkAndFixCaption(captions[key]));
 		}
 		return result;
 	}
-
-    hasTable(tableName) {
-    	return tableName in this.__tables;
+	
+	hasTable(tableName) {
+		return tableName in this.__tables;
 	}
-
-    get about() {
-        let obj = {};
-        obj.toString = ( ( ) => `${this.__data.name} v${this.__data.version}: ${this.__data.description}` ).bind(this);
+	
+	get about() {
+		let obj = {};
+		obj.toString = ( ( ) => `${this.__data.name} v${this.__data.version}: ${this.__data.description}` ).bind(this);
 		return Object.assign(obj, this.__data);
 	}
-
 
 	/*
      * Проверяет заголовок таблицы (один конкретный столбец)
@@ -172,8 +164,8 @@ class GCTable {
 		arr.forEach( (i) => this.addRow(arr[i]) );
 	}
 	__fixRow(row) {
-        let i, result = Object.assign({}, row);
-        for (i in result) {
+		let i, result = Object.assign({}, row);
+		for (i in result) {
 			switch (this.captions[i].type) {
 				case "link":
 					result[i] = this.__valFromLink(this.captions[i], result[i]);
@@ -183,10 +175,10 @@ class GCTable {
 		return result;
     }
     
-/* Заменяет ключи полей link на значения по соотв. адресу.
- * Если в результате есть link, рекурсивно извлечет данные для него.
- */
-    __valFromLink(caption, val) {
+	/* Заменяет ключи полей link на значения по соотв. адресу.
+	 * Если в результате есть link, рекурсивно извлечет данные для него.
+	 */
+	__valFromLink(caption, val) {
         let 
             row = this.base.table(caption.table).get({columnName: caption.to, value: val}),
             names = caption.data.split(";"),
@@ -209,10 +201,10 @@ class GCTable {
 		}
         
 		return result;
-		}
+	}
 	
 	static checkRow(row, captions) {
-	  let length = Object.keys(row).length;
+		let length = Object.keys(row).length;
 		for (let i in row) {
 			if ( !(i in captions) ) return `Unknown key in row: ${i}`;
 		}
@@ -228,12 +220,12 @@ class GCTable {
 }
 
 /* TODO:
-при добавлении записи убрать из чексуммы столбцы с типом auto, записывать их автоматически
-класс таблиц
 Добавление записи: проверка формата записи
 */
 
 /* DONE
+ * при добавлении записи убрать из чексуммы столбцы с типом auto, записывать их автоматически
+ * класс таблиц
  * исправить ошибку: при возврате строки не подставляются данные по ссылке
  * Извлечение записи со ссылкой.
 */

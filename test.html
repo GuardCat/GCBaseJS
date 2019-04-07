@@ -32,7 +32,7 @@ let
 
 	ownersCaptions = {
 		id:		{type: "auto"},
-		name:	{type: "text"};
+		name:	{type: "text"}
 	},
 
 	purchasesCaptions = {
@@ -43,13 +43,13 @@ let
 		},
 		owner: {
 			type:		"link",
-			table:		"owners",
+			table:	"owners",
 			to: 		"id",
 			data:		":all"
 		},
 		pet: {
 			type:		"link",
-			table:		"pets",
+			table:	"pets",
 			to: 		"id",
 			data:		":all"
 		}
@@ -60,12 +60,12 @@ base.addTable("owners", ownersCaptions);
 base.addTable("pets", petsCaptions);
 base.addTable("petTypes", petTypesCaptions);
 base.addTable("purchases", purchasesCaptions);
-		
+/*		
 base.table("pets").addRow({petType: "Рыбка", needs: "Water"});
 base.table("owners").addRow({name: "Смит"});
 base.table("purchases").addRow({date: new Date(), owner: 0});
 console.log( base.table("purchases").get({columnName: "id", value: 0}) );
-
+*/
 alert(base.about);
 
 	</script>
