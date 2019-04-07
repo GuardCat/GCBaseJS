@@ -11,47 +11,52 @@
 	<script src = "GCBase.js"></script>
 	<script>
 let 
-    base = new GCBase({name: "Pets", version: 1, description: "Database of pets and their owners."}),
-    
-    petsCaptions = {
-        id: {
-            type: "auto"
-        },
+	base = new GCBase({name: "Pets", version: 1, description: "Database of pets and their owners."}),
 
-        petType: {
-            type: "text"
-        },
+	petsCaptions = {
+		id: {type: "auto"},
+		
+		petType: {
+			type:		"link",
+			table:		"petTypes",
+			to: 		"id",
+			data:		"name;needs"
+		},
 
-        needs: {
-            type: "text"
-        }
-    },
+		name: {type: "text"}
+	},
+	
+	petTypes = {
+		id:		{type: "auto"},
+		name:	{type:	"text"},
+		needs:	{type: "text"}
+	},
 
-    ownersCaptions = {
-        id: {
-            type: "auto"
-        },
+	ownersCaptions = {
+		id: {
+			type: "auto"
+		},
 
-        name: {
-            type: "text"
-        }
-    },
+		name: {
+			type: "text"
+		}
+	},
 
-    purchasesCaptions = {
-        id: {
-            type: "auto"
-        },
-        date: {
-            type: "date",
-            format: {day: "numeric", month: "long", year: "numeric"}
-        },
+	purchasesCaptions = {
+		id: {
+			type: "auto"
+		},
+		date: {
+			type: "date",
+			format: {day: "numeric", month: "long", year: "numeric"}
+		},
 		owner: {
-        	type:		"link",
+			type:		"link",
 			table:		"owners",
 			to: 		"id",
 			data:		":all"
 		}
-    }
+	}
 ;
 
 base.addTable("owners", ownersCaptions);
