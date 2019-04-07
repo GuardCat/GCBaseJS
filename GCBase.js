@@ -156,7 +156,7 @@ class GCTable {
 			fn = typeof value === "function" ? value : function(rowNow) {return rowNow[value.columnName] === value.value;}
         ;
 		for (i in this.table) {
-			if	( fn(this.table[i]) ) return this.__valFromLinkInRow(this.table[i]); 
+			if	( fn(this.table[i]) ) return this.__fixRow(this.table[i]); 
 		}
 		return false;
 	}
@@ -166,11 +166,13 @@ class GCTable {
 		if (check !== true) throw new Error (`GCTable adding row: wrong row. ${check}`);
 		this.table.push(obj);
 	}
-	__valFromLinkInRow(row) {
+	__fixRow(row) {
         let i, result = Object.assign({}, row);
         for (i in result) {
-			if (this.captions[i].type === "link") {
-				result[i] = this.__valFromLink(this.captions[i], result[i]);
+			switch (this.captions[i].type) {
+				case "link":
+					result[i] = this.__valFromLink(this.captions[i], result[i]);
+					break;
 			}
 		}
 		return result;
@@ -211,8 +213,8 @@ class GCTable {
 		}
 		for (let i in captions) {
 			if (captions[i].type === "auto") {
-				row[i] === captions[i].next;
-				captions[i].next++
+				row[i] = captions[i].next;
+				captions[i].next++;
 			}
 		}
 		if (Object.keys(row).length !== Object.keys(captions).length) return "The number of key in row and in captions doesn't match";

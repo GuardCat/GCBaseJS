@@ -58,9 +58,9 @@ base.addTable("owners", ownersCaptions);
 base.addTable("pets", petsCaptions);
 base.addTable("purchases", purchasesCaptions);
 		
-base.table("pets").addRow({id: 0, petType: "Рыбка", needs: "Water"});
-base.table("owners").addRow({id: 0, name: "Смит"});
-base.table("purchases").addRow({id: 0, date: new Date(), owner: 0});
+base.table("pets").addRow({petType: "Рыбка", needs: "Water"});
+base.table("owners").addRow({name: "Смит"});
+base.table("purchases").addRow({date: new Date(), owner: 0});
 console.log( base.table("purchases").get({columnName: "id", value: 0}) );
 
 alert(base.about);
