@@ -216,15 +216,14 @@ class GCTable {
 	__valFromLink(caption, val) {
         let 
             row = this.base.table(caption.table).get({name: caption.to, value: val}),
-            names = caption.data.split(";"),
             result = {},
 			targetCaption
         ;
         
         if (caption.data === ":all") {
             result = row;
-		} else if (names.length > 1) {
-			names.forEach( (i) => {
+		} else if (caption.data instanceof Array) {
+			caption.data.forEach( (i) => {
 				targetCaption = this.base.__tables[caption.table].__captions[i];
 				if (i !== "") {
 					result[i] = targetCaption.type === "link" ? this.__valFromLink(targetCaption, row[i]) : row[i];

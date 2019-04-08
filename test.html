@@ -29,7 +29,7 @@ let
 		id:				{type:	"auto"},
 		date:			{type:	"date", format:{month: "long", year: "numeric", day: "numeric"}, language: "ru"},
 		training:		{type:	"link", table: "trainings", to: "id", data: ":all", multiply: false},
-		students:		{type:	"link", table: "students", to: "id", data: ":all", multiply: true}
+		students:		{type:	"link", table: "students", to: "id", data: ["id", "male", "name"], multiply: true}
 	},
 	
 	
