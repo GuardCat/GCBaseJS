@@ -150,27 +150,43 @@ class GCTable {
 		if (!this.table.length) return false;
         if (!options) throw new Error(`GCTable: query without parameter.`);
 		let 
-			result, i, 
 			fn = typeof options === "function" ? options : function(fixedRow) {return fixedRow[options.columnName] === options.value;},
-			row
+			i, row
         ;
 		for (i in this.table) {
-			row = __fixRow(this.table[i]);
+			row = this.__fixRow(this.table[i]);
 			if	( fn(row, Object.assign({}, this.table[i])) ) return row; 
 		}
 		return false;
+	}
+	
+	getAll(options) {
+		if (!this.table.length) return false;
+        if (!options) throw new Error(`GCTable: query without parameter.`);
+		let 
+			fn = typeof options === "function" ? options : function(fixedRow) {return fixedRow[options.columnName] === options.value;},
+			result = [ ], i, row
+        ;
+		for (i in this.table) {
+			row = this.__fixRow(this.table[i]);
+			if	( fn(row, Object.assign({}, this.table[i])) ) result.push(row); 
+		}
+		return result;
+	}
+	
+	addRows(arr) {
+		if (!arr.forEach) throw new Error(`GCTable: method addRows didn't resieve array.`);
+		arr.forEach( (el) => this.addRow(el) );
+		return this;
 	}
 	
 	addRow(obj) {
 		let check =  GCTable.checkRow(obj, this.captions);
 		if (check !== true) throw new Error (`GCTable adding row: wrong row. ${check}`);
 		this.table.push(obj);
+		return this;
 	}
 	
-	addRows(arr) {
-		if (!(arr instanceof Array)) throw new Error (`GCTable adding rows array: wrong array.`);
-		arr.forEach( (i) => this.addRow(arr[i]) );
-	}
 	__fixRow(row) {
 		let i, result = Object.assign({}, row), linkArr = [ ];
 		for (i in result) {
@@ -182,6 +198,10 @@ class GCTable {
 					} else {
 						result[i] = this.__valFromLink(this.captions[i], result[i]);
 					}
+					break;
+				
+				case "date":
+					result[i] = result[i].toLocaleString(this.captions[i].language, this.captions[i].format);
 					break;
 			}
 		}
