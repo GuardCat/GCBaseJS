@@ -11,55 +11,39 @@
 	<script src = "GCBase.js"></script>
 	<script>
 let 
-	base = new GCBase({name: "Pets", version: 1, description: "Database of pets and their owners."}),
+	base = new GCBase({name: "Trainings", version: 1, description: "Database of trainings and students."}),
 
-	petsCaptions = {
-		id:		{type: "auto"},
-		name:	{type: "text"},
-		petType: {
-			type:	"link",
-			table:	"petTypes",
-			to: 	"id",
-			data:	"name;needs"
-		}
+	studentsCaptions = {
+		id:				{type:	"auto"},
+		name:			{type:	"text"},
+		male:			{type:	"flag"}
 	},
 	
-	petTypesCaptions = {
-		id:		{type: "auto"},
-		name:	{type:	"text"},
-		needs:	{type: "text"}
+	trainingsCaptions = {
+		id:				{type:	"auto"},
+		name:			{type:	"text"},
+		description:	{type:	"text"}
 	},
 
-	ownersCaptions = {
-		id:		{type: "auto"},
-		name:	{type: "text"}
+	eventsCaptions = {
+		id:				{type:	"auto"},
+		date:			{type:	"date", format:{month: "full", year: "numeric", day: "numeric"}, language: "ru"},
+		training:		{type:	"link", table: "trainings", to: "id", data: ":all", multiply: false},
+		students:		{type:	"link", table: "students", to: "id", data: ":all", multiply: true}
 	},
-
-	purchasesCaptions = {
-		id: 	{type: "auto"},
-		date:	{
-			type: "date",
-			format: {day: "numeric", month: "long", year: "numeric"}
-		},
-		owner: {
-			type:		"link",
-			table:	"owners",
-			to: 		"id",
-			data:		":all"
-		},
-		pet: {
-			type:		"link",
-			table:	"pets",
-			to: 		"id",
-			data:		":all"
-		}
-	}
+	
+	
+	studentsRows = [
+		{name: "Архипов Иван Николаевич", male: true},
+		{name: "Прохорова Татьяна Владимировна", male: false},
+		{name: "Колобанов Пётр Иванович", male: true}
+	]
 ;
 
-base.addTable("owners", ownersCaptions);
-base.addTable("pets", petsCaptions);
-base.addTable("petTypes", petTypesCaptions);
-base.addTable("purchases", purchasesCaptions);
+base.addTable("students", studentsCaptions);
+base.addTable("trainings", trainingsCaptions);
+base.addTable("events", eventsCaptions);
+
 /*		
 base.table("pets").addRow({petType: "Рыбка", needs: "Water"});
 base.table("owners").addRow({name: "Смит"});

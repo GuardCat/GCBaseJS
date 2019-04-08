@@ -96,7 +96,13 @@ class GCBase {
 				break;
 
 			case "date":
-				if ( !(result.format && result.format instanceof Object) ) throw new Error("GCBase addTable: wrong date format");
+				if ( !(result.format && result.format instanceof Object && result.language && !(result.unique)) ) throw new Error("GCBase addTable: wrong date format");
+				
+				break;
+			
+			case "flag":
+				if (result.unique) throw new Error("GCBase addTable: flag can't contain unique: true");
+				result.format = "boolean";
 				break;
 
 			default:
@@ -140,15 +146,17 @@ class GCTable {
 		this.base = base;
 	}
 	
-	get(value) {
+	get(options) {
 		if (!this.table.length) return false;
-        if (!value) throw new Error(`GCTable: query without parameter.`);
+        if (!options) throw new Error(`GCTable: query without parameter.`);
 		let 
 			result, i, 
-			fn = typeof value === "function" ? value : function(rowNow) {return rowNow[value.columnName] === value.value;}
+			fn = typeof options === "function" ? options : function(fixedRow) {return fixedRow[options.columnName] === options.value;},
+			row
         ;
 		for (i in this.table) {
-			if	( fn(this.table[i]) ) return this.__fixRow(this.table[i]); 
+			row = __fixRow(this.table[i]);
+			if	( fn(row, Object.assign({}, this.table[i])) ) return row; 
 		}
 		return false;
 	}
@@ -164,11 +172,16 @@ class GCTable {
 		arr.forEach( (i) => this.addRow(arr[i]) );
 	}
 	__fixRow(row) {
-		let i, result = Object.assign({}, row);
+		let i, result = Object.assign({}, row), linkArr = [ ];
 		for (i in result) {
 			switch (this.captions[i].type) {
 				case "link":
-					result[i] = this.__valFromLink(this.captions[i], result[i]);
+					if(this.captions[i].multiply === true) {
+						result[i].forEach( (el) => linkArr.push( this.__valFromLink(this.captions[i], el) ) );
+						result[i] = linkArr;
+					} else {
+						result[i] = this.__valFromLink(this.captions[i], result[i]);
+					}
 					break;
 			}
 		}
