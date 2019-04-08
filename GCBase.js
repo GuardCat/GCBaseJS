@@ -252,7 +252,7 @@ class GCTable {
 					
 				case "date":
 					var parsedDate = row[i] instanceof Date ? row[i] : new Date(row[i]);
-					if (parsedDate.toString().toLowerCase() === "invalid date") throw new Error(`GCTable addRow(s): recieved wrong date: ${row[i]}`);
+					if (parsedDate.toString().toLowerCase() === "invalid date") return `recieved wrong date: ${row[i]}`;
 					row[i] = parsedDate
 					break;
 			}
