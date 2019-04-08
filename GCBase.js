@@ -96,8 +96,7 @@ class GCBase {
 				break;
 
 			case "date":
-				if ( !(result.format && result.format instanceof Object && result.language && !(result.unique)) ) throw new Error("GCBase addTable: wrong date format");
-				
+				if ( !(result.format && result.format instanceof Object && result.language && !(result.unique)) ) throw new Error("GCBase addTable: wrong date format");				
 				break;
 			
 			case "flag":
@@ -147,20 +146,10 @@ class GCTable {
 	}
 	
 	get(options) {
-		if (!this.table.length) return false;
-        if (!options) throw new Error(`GCTable: query without parameter.`);
-		let 
-			fn = typeof options === "function" ? options : function(fixedRow) {return fixedRow[options.columnName] === options.value;},
-			i, row
-        ;
-		for (i in this.table) {
-			row = this.__fixRow(this.table[i]);
-			if	( fn(row, Object.assign({}, this.table[i])) ) return row; 
-		}
-		return false;
+		return this.getAll(options, true);
 	}
 	
-	getAll(options) {
+	getAll(options, onlyFirst) {
 		if (!this.table.length) return false;
         if (!options) throw new Error(`GCTable: query without parameter.`);
 		let 
@@ -169,8 +158,12 @@ class GCTable {
         ;
 		for (i in this.table) {
 			row = this.__fixRow(this.table[i]);
-			if	( fn(row, Object.assign({}, this.table[i])) ) result.push(row); 
+			if	( fn(row, Object.assign({}, this.table[i])) ) {
+				if (onlyFirst) return row;
+				result.push(row); 
+			}
 		}
+		result = result.length ? result : false;
 		return result;
 	}
 	
@@ -242,9 +235,17 @@ class GCTable {
 			if ( !(i in captions) ) return `Unknown key in row: ${i}`;
 		}
 		for (let i in captions) {
-			if (captions[i].type === "auto") {
-				row[i] = captions[i].next;
-				captions[i].next++;
+			switch (captions[i].type) {
+				case "auto":
+					row[i] = captions[i].next;
+					captions[i].next++;
+					break;
+					
+				case "date":
+					var parsedDate = row[i] instanceof Date ? row[i] : new Date(row[i]);
+					if (parsedDate.toString().toLowerCase() === "invalid date") throw new Error(`GCTable addRow(s): recieved wrong date: ${row[i]}`);
+					row[i] = parsedDate
+					break;
 			}
 		}
 		if (Object.keys(row).length !== Object.keys(captions).length) return "The number of key in row and in captions doesn't match";
