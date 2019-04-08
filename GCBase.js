@@ -152,8 +152,8 @@ class GCTable {
 	getAll(options, onlyFirst) {
 		if (!this.__table.length) return false;
         if (!options) return onlyFirst ? this.__fixRow(this.__table[0]) : this.__fixRows(this.__table);
-		
-		if (typeof options === "number" && onlyFirst) return this.__fixRows( this.__table.slice(0, parseInt(options) + 1) );
+		if (typeof options === "number") return this.__fixRows( this.__table.slice(0, parseInt(options) ) );
+
 		if ("from" in options && "to" in options) return this.__fixRows(this.__table.slice( parseInt(options.from), parseInt(options.to) + 1) );
 		if ( !("name" in options && "value" in options) && typeof options !== "function" ) throw new Error(`GCBase get(All): unknown options type: ${options}`);
 		
@@ -172,7 +172,7 @@ class GCTable {
 		return result;
 	}
 	
-	captions( ) {
+	get captions() {
 		return Object.assign({ }, this.__captions);
 	}
 	
@@ -219,13 +219,22 @@ class GCTable {
 	 */
 	__valFromLink(caption, val) {
         let 
-            row = this.base.table(caption.table).get({name: caption.to, value: val}),
-            result = {},
-			targetCaption
-        ;
-        
-        if (caption.data === ":all") {
-            result = row;
+			targetCaption = this.base.table(caption.table).captions[caption.to],
+			multiply = targetCaption.unique === false,
+            row = !multiply ? this.base.table(caption.table).get({name: caption.to, value: val}) : this.base.table(caption.table).getAll({name: caption.to, value: val}),
+            result = [ ]
+		;
+		if(!multiply) return this.__valFromLinkOneRow(caption, val, row);
+		if(!row) throw new Error("valFromLink: неверная ссылка, объектов нет");
+		
+		row.forEach( (el) =>  result.push(this.__valFromLinkOneRow(caption, val, el)) );		
+		return result;
+	}
+	
+	__valFromLinkOneRow(caption, val, row) {
+		let result = {};
+		if (caption.data === ":all") {
+			result = row;
 		} else if (caption.data instanceof Array) {
 			caption.data.forEach( (i) => {
 				targetCaption = this.base.__tables[caption.table].__captions[i];
@@ -235,7 +244,6 @@ class GCTable {
 			targetCaption = this.base.__tables[caption.__table].__captions[caption.data];
 			result = targetCaption.type === "link" ? this.__valFromLink(targetCaption, row[caption.data]) : row[caption.data];
 		}
-        
 		return result;
 	}
 	
