@@ -294,6 +294,7 @@ Queries
 
 * **addRow**(object: table row)
 * **addRows**(array of rows)
+* **length** количество строк (геттер)
 
 * (-) rename(string: new name) rename table
 * (-) removeColumn( colname, [filterfn | value ***strict equal***] ) will remove the whole column if don't recieve the second parameter.

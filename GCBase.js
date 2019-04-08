@@ -238,6 +238,10 @@ class GCTable {
 		return result;
 	}
 	
+	get length() {
+		return this.table.length;
+	}
+	
 	static checkRow(row, captions) {
 		let length = Object.keys(row).length;
 		for (let i in row) {
