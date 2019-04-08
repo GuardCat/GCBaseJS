@@ -151,9 +151,14 @@ class GCTable {
 	
 	getAll(options, onlyFirst) {
 		if (!this.table.length) return false;
-        if (!options) throw new Error(`GCTable: query without parameter.`);
+        if (!options) return onlyFirst ? this.__fixRow(this.table[0]) : this.__fixRows(this.table);
+		
+		if (typeof options === "number" && onlyFirst) return this.__fixRows( this.table.slice(0, parseInt(options) + 1) );
+		if ("from" in options && "to" in options) return this.__fixRows(this.table.slice( parseInt(options.from), parseInt(options.to) + 1) );
+		if ( !("name" in options && "value" in options) && typeof options !== "function" ) throw new Error(`GCBase get(All): unknown options type: ${options}`);
+		
 		let 
-			fn = typeof options === "function" ? options : function(fixedRow) {return fixedRow[options.columnName] === options.value;},
+			fn = typeof options === "function" ? options : function(fixedRow) {return fixedRow[options.name] === options.value;},
 			result = [ ], i, row
         ;
 		for (i in this.table) {
@@ -200,13 +205,17 @@ class GCTable {
 		}
 		return result;
     }
+	
+	__fixRows(arr) {
+		return arr.map( (el) => this.__fixRow(el) );
+    }
     
 	/* Заменяет ключи полей link на значения по соотв. адресу.
 	 * Если в результате есть link, рекурсивно извлечет данные для него.
 	 */
 	__valFromLink(caption, val) {
         let 
-            row = this.base.table(caption.table).get({columnName: caption.to, value: val}),
+            row = this.base.table(caption.table).get({name: caption.to, value: val}),
             names = caption.data.split(";"),
             result = {},
 			targetCaption
