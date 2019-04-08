@@ -36,7 +36,8 @@ let
 	studentsRows = [
 		{name: "Ахрипов Инал Николаевич", male: true},
 		{name: "Трохорова Татьяна Кизиловна", male: false},
-		{name: "Колобанов Пётр Инанович", male: true}
+		{name: "Колобанов Пётр Инанович", male: true},
+		{name: "Хлынова Арина Кареновна", male: false}
 	],
 	trainingsRows = [
 		{name: "Базовые продажи", description: "Техника продаж для новичков"},
@@ -987,6 +988,7 @@ let
 		{date: "2019/10/10", training: 2, students: [1, 2]},
 		{date: new Date(), training: 0, students: [0, 2]},
 		{date: new Date(), training: 1, students: [1, 2]},
+		{date: new Date(), training: 1, students: [3]},
 		{date: new Date(), training: 1, students: [1, 2]}
 	]
 	
@@ -1001,8 +1003,9 @@ base.table("trainings").addRows(trainingsRows);
 base.table("events").addRows(eventsRows);
 
 var start = performance.now();
-console.log( base.table("events").getAll( (fixedRow, sourceRow) => fixedRow.students.some( (el) => el.male === false ) ) );
+//console.log( base.table("events").getAll( (fixedRow, sourceRow) => fixedRow.students.some( (el) => el.male === false ) ) );
 //console.log( base.table("events").getAll((fixedRow, sourceRow) => fixedRow.students.some( (el) => /Тать/i.test(el.name) ) ) );
+console.log( base.table("events").getAll((fixedRow, sourceRow) => fixedRow.students.some( (el) => el.id === 3 ) ) );
 console.info( (performance.now() - start) / 1000 );
 
 /*		
