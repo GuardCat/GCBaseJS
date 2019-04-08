@@ -224,14 +224,14 @@ class GCTable {
             row = !multiply ? this.base.table(caption.table).get({name: caption.to, value: val}) : this.base.table(caption.table).getAll({name: caption.to, value: val}),
             result = [ ]
 		;
-		if(!multiply) return this.__valFromLinkOneRow(caption, val, row);
-		if(!row) throw new Error("valFromLink: неверная ссылка, объектов нет");
+		if(!multiply) return this.__valFromLinkOneRow(caption, val, row, targetCaption);
+		if(!row) throw new Error("valFromLink: неверная ссылка, записей не найдено.");
 		
-		row.forEach( (el) =>  result.push(this.__valFromLinkOneRow(caption, val, el)) );		
+		row.forEach( (el) =>  result.push(this.__valFromLinkOneRow(caption, val, el, targetCaption)) );		
 		return result;
 	}
 	
-	__valFromLinkOneRow(caption, val, row) {
+	__valFromLinkOneRow(caption, val, row, targetCaption) {
 		let result = {};
 		if (caption.data === ":all") {
 			result = row;
