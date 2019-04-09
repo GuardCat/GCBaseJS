@@ -27,12 +27,13 @@ class GCBase {
 				this.__data = Object.assign({}, income.__data);
 				this.__tables = Object.assign({}, income.__tables);
 			} else {
-				throw new Error("GCBase constructor error: wrong database ");
+				throw new Error("GCBase constructor error: wrong database");
 			}	
-		
+
 		} else {
 			throw new Error("GCBase constructor error: wrong incoming parameter");
 		}
+		this.cachedTables = {};
 	}
 	/* Добавляем таблицу в экземпляр БД */
 	addTable(name, captions) {
@@ -46,9 +47,9 @@ class GCBase {
 		this.__tables[name].__rows = [ ];	
 	}
 	
-	table(name) {
+	table(name, recache = false) {
 		if (!this.hasTable(name)) throw new Error(`GCBase get table: table doesnt exist: ${name}.`);
-		return new GCTable(this.__tables[name], this);
+		return new GCTable(name, this, recache);
 	}
 	
 	/* Прогоняет заголовки через проверку и дополнение, копирует их в новый объект.*/
@@ -140,47 +141,24 @@ class GCBase {
 		return true;
 	}
 	
-	fixRow(row) {
-		if ("some" in row && "map" in row) return row.map(this.fixRow); /*Если массив, обрабатываем каждую строку*/
-
-		let column, fixedRow = { };
-
-		for (column in row) {
-			switch (this.captions[column].type) {
-				case "link":
-					if(this.captions[column].multiply === true) {
-						fixedRow[column] = [ ];
-						row[column].forEach( (keyValue) => fixedRow[column].push( this.__valFromLink(this.captions[column], keyValue) ) );
-						fixedRow[column].source = Object.assign([ ], row[column]);
-					} else {
-						fixedRow[column] =  this.__valFromLink(this.captions[column], row[column]);
-						fixedRow[column].source = row[column];
-					}
-
-					break;
-				
-				case "date":
-					fixedRow[column] = row[column].toLocaleString(this.captions[column].language, this.captions[column].format);
-					break;
-			}
-		}
-		return result;
-	}
-	
 }
 
 class GCTable {
-	constructor(table, base) {
-		this.__rows = table.__rows;
-		this.rows = GCTable.fix(this.source);
+	constructor(name, base, recache) {
+		this.__rows = base.__tables[name].__rows;
+		
+		if ( !(name in base.cachedTables) || recache ) {
+			base.cachedTables[name] = this.__fixRow(this.__rows);
+		}
+		this.rows = base.cachedTables[name];
 		this.rows.add = this.__addRow.bind(this);
 		this.captions = object.assign({}, table.__captions);
 		this.base = base;
 	}
 	
 	get(options, first = false) {
-        if (!options) new Error("GCBase get(All): empty options");
-		if ( !("name" in options && "value" in options) throw new Error(`GCTable get: unknown options type: ${options}`);
+        if (!options) throw new Error("GCBase get(All): empty options");
+		if ( !("name" in options && "value" in options) ) throw new Error(`GCTable get: unknown options type: ${options}`);
 		
 		let 
 			fn = function(row) {return row[options.name] === options.value;},
@@ -196,13 +174,40 @@ class GCTable {
 		return result;
 	}
 	
-	
+	__fixRow(row) {
+		if ("some" in row && "map" in row) return row.map(this.fixRow); /*Если массив, обрабатываем каждую строку*/
+
+		let column, fixedRow = { }, caption;
+
+		for (column in row) {
+			caption = this.captions[column];
+			switch (this.captions[column].type) {
+				case "link":
+					if(caption.multiply === true) {
+						fixedRow[column] = row[column].map( (key) => this.__valFromLink(caption, key, caption[caption.table][caption.to], base.cachedTables[caption.table]) );
+						
+						fixedRow[column].source = Object.assign([ ], row[column]);
+					} else {
+						fixedRow[column] =  this.__valFromLink(this.captions[column], row[column]);
+						fixedRow[column].source = row[column];
+					}
+
+					break;
+				
+				case "date":
+					fixedRow[column] = row[column].toLocaleString(caption.language, caption.format);
+					break;
+			}
+		}
+		return result;
+	}
 	__addRow(obj) {
 		if ("some" in obj && "map" in obj) return obj.map(this.rows.add); /*Если массив, обрабатываем каждую строку*/
 
 		let check =  GCTable.checkRow(obj, this.captions);
 		if (check !== true) throw new Error (`GCTable adding row: wrong row. ${check}`);
 		this.__rows.push(obj);
+		this.base.cachedTables[this.name].push( this.__fixRow(obj) );
 		return this;
 	}
 	
@@ -227,6 +232,7 @@ class GCTable {
 				
 				case "date":
 					fixedRow[column] = row[column].toLocaleString(this.captions[column].language, this.captions[column].format);
+					fixedRow[column].source = row[column];
 					break;
 			}
 		}
@@ -237,7 +243,7 @@ class GCTable {
 	/* Заменяет ключи полей link на значения по соотв. адресу.
 	 * Если в результате есть link, рекурсивно извлечет данные для него.
 	 */
-	__valFromLink(caption, val) {
+	__oldvalFromLink(caption, val) {
         let 
 			targetCaption = this.base.table(caption.table).captions[caption.to],
 			multiply = targetCaption.unique === false,
@@ -251,8 +257,20 @@ class GCTable {
 		return result;
 	}
 	
-	__getLinkValue(caption, keyValue) {
+	/* Получает значение по ссылке. Важно: на вход подаётся обработанный массив строк целевой таблицы! */
+	__valFromLink(caption, key, targetCaption, targetTableRows) {
+		let result, 
+			rows = targetTableRows.filter( (row) => {
+				return "some" in key ? key.some( (keyVariant) => keyVariant === row[caption.to] ) : key === row[caption.to];
+			} )
+		;
 		
+		if (caption.data === ":all") {
+			return 
+		}
+		result = targetTableRows[caption.data];
+
+		return result;
 	
 	}
 	
