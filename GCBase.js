@@ -140,8 +140,8 @@ class GCBase {
 
 class GCTable {
 	constructor(table, base) {
-		this.__table = table.__rows;
-		this.__captions = table.__captions;
+		this.__source = table.__rows;
+		this.captions = object.assign({}, table.__captions);
 		this.base = base;
 	}
 	
@@ -172,9 +172,6 @@ class GCTable {
 		return result;
 	}
 	
-	get captions() {
-		return Object.assign({ }, this.__captions);
-	}
 	
 	addRows(arr) {
 		if (!arr.forEach) throw new Error(`GCTable: method addRows didn't resieve array.`);
