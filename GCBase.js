@@ -113,6 +113,15 @@ class GCBase {
 				if (result.unique) throw new Error("GCBase addTable: flag can't contain unique: true");
 				result.format = "boolean";
 				break;
+				
+			case "number":
+				result.format = result.format || "integer";
+				if ( !["integer", "float", "precision"].some((el) => el === result.format) )  throw new Error(`GCBase addTable: number has unknown format: ${result.format}`);
+				if (result.format === "precision") {
+					result.precision = parseInt(result.precision);
+					if(isNaN(result.precision)) throw new Error(`GCBase addTable: precision number needs quantity of numbers after comma in precision as Integer. Recieved: ${result.format}`);
+				} 
+				break;
 
 			default:
 				throw new Error(`GCBase addTable: unknown caption type: ${result.type}`);
@@ -199,8 +208,13 @@ class GCTable {
 				case "date":
 					parsedDate = row[column] instanceof Date ? row[column] : new Date(row[column]);
 					if ( isNaN(parsedDate.getDay( )) ) throw new Error(`GCTable addRow: recieved wrong date: ${row[i]}`);
-					fixedRow[column] = new String( parsedDate.toLocaleString(caption.language, caption.format) ); /*New String Чтобы можно было привязать свойство Source*/
-					fixedRow[column].source = parsedDate;
+					if ( (caption.format && !caption.language) || (!caption.format && caption.language) ) throw new Error(`GCTable addRow: if you add format or language to date, you must use BOTH of the parameters.`);
+					if ( !caption.format instanceof Object) throw new Error(`GCTable addRow: date format can be only object. Recieved: ${caption.format}`);
+					
+					fixedRow[column]= parsedDate;
+					if (caption.format) {
+						fixedRow[column].toString = fixedRow[column].toLocaleDateString.bind(fixedRow[column], caption.language, caption.format)
+					} 
 					break;
 				default:
 					fixedRow[column] = row[column];
