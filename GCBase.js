@@ -216,6 +216,20 @@ class GCTable {
 						fixedRow[column].toString = fixedRow[column].toLocaleDateString.bind(fixedRow[column], caption.language, caption.format)
 					} 
 					break;
+				case "number":
+					switch (caption.format) {
+						case "integer":
+							fixedRow[column] = parseInt(row[column]);
+							break;
+						case "float":
+							fixedRow[column] = parseFloat(row[column]);
+							break;
+						case "precision":
+							fixedRow[column] = +( (+row[column]).toFixed(caption.precision) );
+							break;
+					}
+					if ( isNaN(fixedRow[column]) ) throw new Error(`GCTable addRow: wrong number: ${fixedRow[column]}`);
+					break;
 				default:
 					fixedRow[column] = row[column];
 			}
