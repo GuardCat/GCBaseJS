@@ -17,7 +17,7 @@ let
 		id:				{type:	"auto"},
 		name:			{type:	"text"},
 		male:			{type:	"flag"},
-		club:			{type:	"text"},		
+		rc:				{type:	"text"},		
 		age:			{type:	"number"}	
 	},
 	
@@ -31,15 +31,15 @@ let
 		id:				{type:	"auto"},
 		date:			{type:	"date", format:{month: "long", year: "numeric", day: "numeric"}, language: "ru"},
 		training:		{type:	"link", table: "trainings", to: "id", data: ":all"},
-		students:		{type:	"link", table: "students", to: "club", data: ["id", "name", "male"], multiply: true}
+		students:		{type:	"link", table: "students", to: "rc", data: ":all", multiply: true}
 	},
 	
 	
 	studentsRows = [
-		{name: "Ахрипов Инал Николаевич", male: true, club: "Чёрные псы", age: 20},
-		{name: "Трохорова Татьяна Кизиловна", male: false, club: "Чёрные псы", age: 20},
-		{name: "Колобанов Пётр Инанович", male: true, club: "Белые кошки", age: 20},
-		{name: "Хлынова Арина Кареновна", male: false, club: "Белые кошки", age: 20}
+		{name: "Ахрипов Инал Николаевич", male: true, rc: "СБРЦ", age: 20},
+		{name: "Трохорова Татьяна Кизиловна", male: false, rc: "ВВРЦ", age: 20},
+		{name: "Колобанов Пётр Инанович", male: true, rc: "МСРЦ", age: 20},
+		{name: "Хлынова Арина Кареновна", male: false, rc: "МСРЦ", age: 20}
 	],
 	trainingsRows = [
 		{name: "Базовые продажи", description: "Техника продаж для новичков"},
@@ -47,9 +47,9 @@ let
 		{name: "Продвинутые продажи", description: "Техника продаж для профи"},
 	],
 	eventsRows = [
-		{date: "2019/10/10", training: 2, students: ["Чёрные псы"]},
-		{date: "2019/10/10", training: 2, students: ["Чёрные псы"]},
-		{date: "2019/10/10", training: 2, students: ["Белые кошки", "Чёрные псы"]}
+		{date: "2019/10/10", training: 2, students: ["СБРЦ", "ВВРЦ"]},
+		{date: "2019/10/11", training: 2, students: ["МСРЦ"]},
+		{date: "2019/10/12", training: 2, students: ["ВВРЦ"]}
 	]
 	
 ;
