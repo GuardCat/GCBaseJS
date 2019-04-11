@@ -201,8 +201,10 @@ class GCTable {
 					if ( (caption.format && !caption.language) || (!caption.format && caption.language) ) throw new Error(`GCTable addRow: if you add format or language to date, you must use BOTH of the parameters.`);
 					if ( !caption.format instanceof Object) throw new Error(`GCTable addRow: date format can be only object. Recieved: ${caption.format}`);
 					
-					fixedRow[column]= {text: parsedDate, source: parsedDate.toLocaleDateString(caption.language, caption.format);
-
+					fixedRow[column]= caption.format ? 
+						{text: parsedDate, source: parsedDate.toLocaleDateString(caption.language, caption.format)}
+						: parsedDate
+					; 
 					break;
 				case "number":
 					switch (caption.format) {
