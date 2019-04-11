@@ -191,8 +191,6 @@ class GCTable {
 					/*внедряем исходный текст в объект (в том числе в каждый объект в массиве)*/
 					if (fixedRow[column] instanceof Array) {
 						fixedRow[column].forEach( (el) => {if (!el.__source) el.__source = row[column] instanceof Array ? Object.assign([ ], row[column]) : row[column] });
-						//console.log(row[column], fixedRow[column]);
-
 					} else {
 						fixedRow[column].__source = row[column] instanceof Array ? Object.assign([ ], row[column]) : row[column];
 					}
@@ -203,10 +201,8 @@ class GCTable {
 					if ( (caption.format && !caption.language) || (!caption.format && caption.language) ) throw new Error(`GCTable addRow: if you add format or language to date, you must use BOTH of the parameters.`);
 					if ( !caption.format instanceof Object) throw new Error(`GCTable addRow: date format can be only object. Recieved: ${caption.format}`);
 					
-					fixedRow[column]= parsedDate;
-					if (caption.format) {
-						fixedRow[column].toString = fixedRow[column].toLocaleDateString.bind(fixedRow[column], caption.language, caption.format)
-					} 
+					fixedRow[column]= {text: parsedDate, source: parsedDate.toLocaleDateString(caption.language, caption.format);
+
 					break;
 				case "number":
 					switch (caption.format) {
