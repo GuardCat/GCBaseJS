@@ -243,21 +243,35 @@ base.addTable("customers", {
     }
 );
 ```
+### stringify: стрингифицирует хранилища Базы
+Если передан параметр true, обработает и кэшированные (с отформатированными значениями, загруженными link'ами) таблицы
+иначе, только source
+```javascript
+base.stringify([withCache])
+```
+### stringifyCache: стрингифицирует только cachedTables
+Возвращает стрингифицированный результат, ничего не меняет.
+```javascript
+base.stringifyCache()
+```
+
+### **recache** — пересчет ссылок, дат и т.д. для каждой таблицы. Требуется после изменения таблицы, на которую ссылается текущая. Производится вручную (для экономии ресурсов)
+
 
 ### dropTable: Удаление таблицы
-Метод принимает имя таблицы для удаления.
-
+(-) Метод принимает имя таблицы для удаления.
 ```javascript
 base.dropTable("customers")
 ```
 Если на таблицу есть ссылки из других таблиц, будет брошено исключение "GCBase drop table error: the table has links from the another tables. Remove links first.".
 
 ### save: Сохраняет БД в LS
+Если указать false, не будет сохранять кэш таблиц.
 ```javascript
-base.save();
+(-) base.save([withCache = true]);
 ```
 
-### reload: Загружает БД из LS
+### load: Загружает БД из LS
 Текущая БД удаляется без сохранения, все данные загружаются из LS.
 При отсутствии БД с соответствующим именем в LS, бросает исключение.
 ```javascript
@@ -292,6 +306,8 @@ Queries
 **Методы**
 
 * **rows.add**(object: table row | Array of table rows)
+* **recache** — пересчет ссылок, дат и т.д. Требуется после изменения таблицы, на которую ссылается текущая. Производится вручную (для экономии ресурсов)
+
 * (-)**rows.delete** (fn) удаление строк по функции
 rows.delete, rows.splice, rows.shift, rows.push, rows.unshift, rows.pop are undefined.
 

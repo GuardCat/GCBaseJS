@@ -8,13 +8,13 @@
 class GCBase {
 	constructor(income) {
 		if (!income) throw new Error("GCBase constructor error: no incoming parameters");
-
+		this.cachedTables = {};
 		if ( (typeof income) === "string" ) {
 
 			if (income.length <= 30) {
 				this.load(income);
 			} else {
-				this.parse(income);			
+				this.reparse(income);			
 			}
 		
 		/* Если передан объект, проверяем, это заголовок новой БД или БД целиком */
@@ -33,8 +33,39 @@ class GCBase {
 		} else {
 			throw new Error("GCBase constructor error: wrong incoming parameter");
 		}
-		this.cachedTables = {};
+
 	}
+	
+	stringify (withCache = false){ 
+		return withCache ?
+			GCBase.__export.bind(this)( )
+			: GCBase.__export.bind(this)("cachedTables")
+
+		; 
+	}
+	
+	stringifyCache() {
+		rerurn GCBase.__export.bind(this.cachedTables);
+	}
+	
+	reparse(text) {
+		let obj = JSON.parse(text);
+		Object.assign(this, obj);
+	}
+	
+	save(withCache = true) {
+		window.localStorage.setItem( `GCBase:${this.__data.name}`, this.stringify(withCache) );
+	}
+	
+	load(name) {
+		name = name || this.__data.name;
+		let data = window.localStorage.getItem(`GCBase:${name}`);
+		
+		if (!data) throw new Error(`GCBase load: database ${name} doesn't exists in localStorage.`)
+		this.reparse(data);
+		if (Object.keys(this.cachedTables).length === 0) this.recache();
+	}
+	
 	/* Добавляем таблицу в экземпляр БД */
 	addTable(name, captions) {
 		if (!name) throw new Error("GCBase addTable: wrong name");
@@ -75,6 +106,24 @@ class GCBase {
 		return Object.assign(obj, this.__data);
 	}
 
+	recache() {
+		let length = Object.keys(base.__tables).length, key, errors = 0;
+
+		while(length) {
+			for(key in base.__tables) {
+				try {
+					this.table(key).recache();
+					length--;
+				} catch(err) {
+					console.log(key, err);
+					errors++
+					if (errors > Object.keys(base.__tables)) throw new Error("GCBase recache: unknown error")
+					continue;
+				}
+			}
+		}
+	}
+	
 	/*
      * Проверяет заголовок таблицы (один конкретный столбец)
      * @param {object} caption — заголовок одного столбца
@@ -129,6 +178,7 @@ class GCBase {
 		return result;
 	}
 
+	
 	/*
 		Проверяет объект на соответствие формату __data
 	*/
@@ -155,6 +205,9 @@ class GCBase {
 		return true;
 	}
 	
+	static __export(exclude) {
+		return JSON.stringify(this, (key, val) => key === exclude ? undefined : val);
+	}
 }
 
 class GCTable {
@@ -164,6 +217,7 @@ class GCTable {
 		this.captions = Object.assign({}, base.__tables[name].__captions);
 		this.base = base;
 		this.name = name;
+
 		
 		if ( !(name in base.cachedTables) || recache ) {
 			base.cachedTables[name] = this.__fixRow(this.__rows);
@@ -178,6 +232,8 @@ class GCTable {
 	}
 	
 
+	stringify() { return GCBase.__export.bind(this.rows)(); }
+	recache () { return this.base.table(this.name, true) }
 	
 	__fixRow(row) {
 		if (row instanceof Array) { return row.map( this.__fixRow.bind(this) )}; /*Если массив, обрабатываем каждую строку*/
@@ -202,7 +258,7 @@ class GCTable {
 					if ( !caption.format instanceof Object) throw new Error(`GCTable addRow: date format can be only object. Recieved: ${caption.format}`);
 					
 					fixedRow[column]= caption.format ? 
-						{text: parsedDate, source: parsedDate.toLocaleDateString(caption.language, caption.format)}
+						{source: parsedDate, text: parsedDate.toLocaleDateString(caption.language, caption.format)}
 						: parsedDate
 					; 
 					break;
@@ -280,9 +336,9 @@ class GCTable {
 }
 
 /* TODO:
-добавить метод recache для перестройки таблиц
-добавить сохранение и получение таблицы из LS
-добавить методы парсинга текста для таблицы и БД
+
+
+
 проверить ссылки на ссылки
 добавить метод для выявления циклических ссылок
 Добавление записи: проверка формата записи
@@ -294,6 +350,13 @@ class GCTable {
 */
 
 /* DONE
+
+ * написать метод recache для базы. Должен рекешировать таблицы с учетом ссылок: начинать с безссылочных таблиц и двигаться по 
+   порядку таблиц так, чтобы не возникало ошибок. Простой вариант: пройтись recache по списку, при ошибках перекидывая проблемную
+   таблицу в конец списка
+ * добавить методы парсинга текста для таблицы и БД
+ * добавить сохранение и получение таблицы из LS
+ * добавить метод recache для перестройки таблиц
  * при добавлении записи убрать из чексуммы столбцы с типом auto, записывать их автоматически
  * класс таблиц
  * исправить ошибку: при возврате строки не подставляются данные по ссылке
