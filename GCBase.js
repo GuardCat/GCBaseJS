@@ -1,5 +1,6 @@
 /*jshint esversion: 6 */
-
+/*jshint browser: true */
+/*jshint -W083*/
 
 /**
  * База данных
@@ -33,14 +34,16 @@ class GCBase {
 		} else {
 			throw new Error("GCBase constructor error: wrong incoming parameter");
 		}
-
+	}
+	
+	get tables( ) {
+		return Object.keys(this.__tables);
 	}
 	
 	stringify (withCache = false){ 
 		return withCache ?
 			GCBase.__export.bind(this)( )
 			: GCBase.__export.bind(this)("cachedTables")
-
 		; 
 	}
 	
@@ -54,14 +57,14 @@ class GCBase {
 	}
 	
 	save(withCache = true) {
-		window.localStorage.setItem( `GCBase:${this.__data.name}`, this.stringify(withCache) );
+		localStorage.setItem( `GCBase:${this.__data.name}`, this.stringify(withCache) );
 	}
 	
 	load(name) {
 		name = name || this.__data.name;
-		let data = window.localStorage.getItem(`GCBase:${name}`);
+		let data = localStorage.getItem(`GCBase:${name}`);
 		
-		if (!data) throw new Error(`GCBase load: database ${name} doesn't exists in localStorage.`)
+		if (!data) throw new Error(`GCBase load: database ${name} doesn't exists in localStorage.`);
 		this.reparse(data);
 		if (Object.keys(this.cachedTables).length === 0) this.recache();
 	}
@@ -107,17 +110,17 @@ class GCBase {
 	}
 
 	recache() {
-		let length = Object.keys(base.__tables).length, key, errors = 0;
+		let length = Object.keys(this.__tables).length, key, errors = 0;
 
 		while(length) {
-			for(key in base.__tables) {
+			for(key in this.__tables) {
 				try {
 					this.table(key).recache();
 					length--;
 				} catch(err) {
-					console.log(key, err);
-					errors++
-					if (errors > Object.keys(base.__tables)) throw new Error("GCBase recache: unknown error")
+					window.console.log(key, err);
+					errors++;
+					if (errors > Object.keys(this.__tables)) throw new Error("GCBase recache: unknown error");
 					continue;
 				}
 			}
@@ -226,17 +229,17 @@ class GCTable {
 		
 		/* тюнинг rows, минимальная защита от шаловливых рук*/
 		this.rows.add = this.__addRow.bind(this);
-		this.rows.__push = this.rows.push /* для внутреннего использования*/
+		this.rows.__push = this.rows.push; /* для внутреннего использования*/
 		this.rows.splice = this.rows.shift = this.rows.push = this.rows.unshift = this.rows.pop = this.rows.delete = undefined;
 
 	}
 	
 
 	stringify() { return GCBase.__export.bind(this.rows)(); }
-	recache () { return this.base.table(this.name, true) }
+	recache () { return this.base.table(this.name, true); }
 	
 	__fixRow(row) {
-		if (row instanceof Array) { return row.map( this.__fixRow.bind(this) )}; /*Если массив, обрабатываем каждую строку*/
+		if (row instanceof Array) { return row.map( this.__fixRow.bind(this) );} /*Если массив, обрабатываем каждую строку*/
 		let column, fixedRow = { }, caption, parsedDate;
 		for (column in row) {
 			caption = this.captions[column];
@@ -246,16 +249,20 @@ class GCTable {
 					//console.log(row[column], column)
 					/*внедряем исходный текст в объект (в том числе в каждый объект в массиве)*/
 					if (fixedRow[column] instanceof Array) {
-						fixedRow[column].forEach( (el) => {if (!el.__source) el.__source = row[column] instanceof Array ? Object.assign([ ], row[column]) : row[column] });
+						fixedRow[column].forEach( (el) => {
+							if (!el.__source) { 
+								el.__source = row[column] instanceof Array ? Object.assign([ ], row[column]) : row[column];
+							}
+						} );
 					} else {
 						fixedRow[column].__source = row[column] instanceof Array ? Object.assign([ ], row[column]) : row[column];
 					}
 					break;				
 				case "date":
 					parsedDate = row[column] instanceof Date ? row[column] : new Date(row[column]);
-					if ( isNaN(parsedDate.getDay( )) ) throw new Error(`GCTable addRow: recieved wrong date: ${row[i]}`);
+					if ( isNaN(parsedDate.getDay( )) ) throw new Error(`GCTable addRow: recieved wrong date: ${row[column]}`);
 					if ( (caption.format && !caption.language) || (!caption.format && caption.language) ) throw new Error(`GCTable addRow: if you add format or language to date, you must use BOTH of the parameters.`);
-					if ( !caption.format instanceof Object) throw new Error(`GCTable addRow: date format can be only object. Recieved: ${caption.format}`);
+					if ( !(caption.format instanceof Object) ) throw new Error(`GCTable addRow: date format can be only object. Recieved: ${caption.format}`);
 					
 					fixedRow[column]= caption.format ? 
 						{source: parsedDate, text: parsedDate.toLocaleDateString(caption.language, caption.format)}
@@ -286,7 +293,7 @@ class GCTable {
 	__addRow(row) {
 		if ("some" in row && "map" in row) return row.map(this.rows.add); /*Если массив, обрабатываем каждую строку*/
 
-		for (let column in row) if ( !(column in this.captions) ) throw new Error (`GCTable adding row: Unknown key in row: ${i}`);
+		for (let column in row) if ( !(column in this.captions) ) throw new Error (`GCTable adding row: Unknown key in row: ${column}`);
 
 		for (let column in this.captions) { /* Обновляем заголовок для автоматического поля */
 			if(this.captions[column].type === "auto") {
