@@ -58,10 +58,10 @@ let
 for (let i = 0; i < recordsRepeat; i++) {
 	repeated.push(...eventsRows)
 }
-
+base.addTable("events", eventsCaptions);
 base.addTable("students", studentsCaptions);
 base.addTable("trainings", trainingsCaptions);
-base.addTable("events", eventsCaptions);
+
 
 var start = performance.now();
 base.table("students").rows.add(studentsRows);

@@ -45,7 +45,7 @@ class GCBase {
 	}
 	
 	stringifyCache() {
-		rerurn GCBase.__export.bind(this.cachedTables);
+		return GCBase.__export.bind(this.cachedTables);
 	}
 	
 	reparse(text) {
@@ -148,7 +148,7 @@ class GCBase {
 			case "link":
 				if ( !("data" in result && "to" in result && "table" in result) ) throw new Error("GCBase addTable: wrong link caption");
 				if ( result.multiply !== true && result.data.some ) throw new Error("GCBase addTable: multiply is false, but there is several keys in the caption.data");
-				if ( !base.hasColumn(result.table, result.to) ) throw new Error(`GCBase addTable: wrong link, table or column doesn't exists (${result.table}:${result.to})`);
+				//if ( !base.hasColumn(result.table, result.to) ) throw new Error(`GCBase addTable: wrong link, table or column doesn't exists (${result.table}:${result.to})`);
 				break;
 
 			case "date":
