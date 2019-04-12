@@ -245,9 +245,8 @@ class GCTable {
 			caption = this.captions[column];
 			switch (caption.type) {
 				case "link":
-					fixedRow[column] = this.__valFromLink(caption, row[column], this.base.__tables[caption.table].__captions[caption.to], this.base.cachedTables[caption.table]);	
-					//console.log(row[column], column)
-					/*внедряем исходный текст в объект (в том числе в каждый объект в массиве)*/
+					fixedRow[column] = {key: row[column], value: this.__valFromLink(caption, row[column], this.base.__tables[caption.table].__captions[caption.to], this.base.cachedTables[caption.table])};
+					/*внедряем исходный текст в объект (в том числе в каждый объект в массиве)
 					if (fixedRow[column] instanceof Array) {
 						fixedRow[column].forEach( (el) => {
 							if (!el.__source) { 
@@ -256,7 +255,7 @@ class GCTable {
 						} );
 					} else {
 						fixedRow[column].__source = row[column] instanceof Array ? Object.assign([ ], row[column]) : row[column];
-					}
+					}*/
 					break;				
 				case "date":
 					parsedDate = row[column] instanceof Date ? row[column] : new Date(row[column]);
