@@ -1,6 +1,5 @@
 /*jshint esversion: 6 */
 /*jshint browser: true */
-/*jshint -W083*/
 
 /**
  * База данных
@@ -151,7 +150,7 @@ class GCBase {
 			case "link":
 				if ( !("data" in result && "to" in result && "table" in result) ) throw new Error("GCBase addTable: wrong link caption");
 				if ( result.multiply !== true && result.data.some ) throw new Error("GCBase addTable: multiply is false, but there is several keys in the caption.data");
-				//if ( !base.hasColumn(result.table, result.to) ) throw new Error(`GCBase addTable: wrong link, table or column doesn't exists (${result.table}:${result.to})`);
+				if ( !base.hasColumn(result.table, result.to) ) throw new Error(`GCBase addTable: wrong link, table or column doesn't exists (${result.table}:${result.to})`);
 				break;
 
 			case "date":
@@ -299,7 +298,6 @@ class GCTable {
 		return this;
 	}
 	
-	/* todo: recache table */
     
 	/* Получает значение по ссылке. Важно: на вход подаётся обработанный массив строк целевой таблицы! */
 	__valFromLink(caption, key, targetCaption, targetTableRows) {
@@ -328,12 +326,9 @@ class GCTable {
 		return targetCaption.uniq === true ? result[0] : result;	
 	}
 	
-	
 }
 
 /* TODO:
-
-
 
 проверить ссылки на ссылки
 добавить метод для выявления циклических ссылок
