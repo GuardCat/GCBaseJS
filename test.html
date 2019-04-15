@@ -51,16 +51,17 @@ let
 		{date: "2019/10/11", training: 2, students: ["МСРЦ"]},
 		{date: "2019/10/12", training: 2, students: ["ВВРЦ"]}
 	],
-	i, recordsRepeat = 1500, repeated = [];
+	i, recordsRepeat = 7000, repeated = [];
 	
 ;
 
 for (let i = 0; i < recordsRepeat; i++) {
 	repeated.push(...eventsRows)
 }
-base.addTable("events", eventsCaptions);
 base.addTable("students", studentsCaptions);
 base.addTable("trainings", trainingsCaptions);
+base.addTable("events", eventsCaptions);
+
 
 
 var start = performance.now();
