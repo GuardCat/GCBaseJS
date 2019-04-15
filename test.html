@@ -51,7 +51,7 @@ let
 		{date: "2019/10/11", training: 2, students: ["МСРЦ"]},
 		{date: "2019/10/12", training: 2, students: ["ВВРЦ"]}
 	],
-	i, recordsRepeat = 7000, repeated = [];
+	i, recordsRepeat = 3000, repeated = [];
 	
 ;
 
@@ -69,6 +69,8 @@ base.table("students").rows.add(studentsRows);
 base.table("trainings").rows.add(trainingsRows);
 base.table("events").rows.add(repeated);
 console.info( (performance.now() - start) / 1000 );
+
+console.log(base.table("events").rows.length)
 
 //console.log( base.table("events").getAll( (fixedRow, sourceRow) => fixedRow.students.some( (el) => el.male === false ) ) );
 //console.log( base.table("events").getAll((fixedRow, sourceRow) => fixedRow.students.some( (el) => /Тать/i.test(el.name) ) ) );
