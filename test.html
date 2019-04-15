@@ -1,62 +1,61 @@
-<!DOCTYPE HTML>
-<head>
-  <meta charset = "utf-8">
-</head>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
 
-<body>
-
-	<div id="output">Input form</div>
-	<div id="input">Output form</div>
-
-	<script src = "GCBase.js"></script>
-	<script>
+	</head>
+	<body>
+		<div id="output">Input form</div>
+		<div id="input">Output form</div>
+		<script src="GCBase.js"></script>
+<script>
 let 
-	base = new GCBase({name: "Trainings", version: 1, description: "Database of trainings and students."}),
+ base = new GCBase({name: "Trainings", version: 1, description: "Database of trainings and students."}),
 
-	studentsCaptions = {
-		id:				{type:	"auto"},
-		name:			{type:	"text"},
-		male:			{type:	"flag"},
-		rc:				{type:	"text"},		
-		age:			{type:	"number"}	
-	},
-	
-	trainingsCaptions = {
-		id:				{type:	"auto"},
-		name:			{type:	"text"},
-		description:	{type:	"text"}
-	},
+ studentsCaptions = {
+  id:    {type: "auto"},
+  name: {type: "text"},
+  male: {type: "flag"},
+  rc:    {type: "text"},  
+  age:  {type: "number"} 
+ },
+ 
+ trainingsCaptions = {
+  id:    {type: "auto"},
+  name:   {type: "text"},
+  description: {type: "text"}
+ },
 
-	eventsCaptions = {
-		id:				{type:	"auto"},
-		date:			{type:	"date", format:{month: "long", year: "numeric", day: "numeric"}, language: "ru"},
-		training:		{type:	"link", table: "trainings", to: "id", data: ":all"},
-		students:		{type:	"link", table: "students", to: "rc", data: ":all", multiply: true}
-	},
-	
-	
-	studentsRows = [
-		{name: "Ахрипов Инал Николаевич", male: true, rc: "СБРЦ", age: 20},
-		{name: "Трохорова Татьяна Кизиловна", male: false, rc: "ВВРЦ", age: 20},
-		{name: "Колобанов Пётр Инанович", male: true, rc: "МСРЦ", age: 20},
-		{name: "Хлынова Арина Кареновна", male: false, rc: "МСРЦ", age: 20}
-	],
-	trainingsRows = [
-		{name: "Базовые продажи", description: "Техника продаж для новичков"},
-		{name: "БУН", description: "Базовые управленческие навыки"},
-		{name: "Продвинутые продажи", description: "Техника продаж для профи"},
-	],
-	eventsRows = [
-		{date: "2019/10/10", training: 2, students: ["СБРЦ", "ВВРЦ"]},
-		{date: "2019/10/11", training: 2, students: ["МСРЦ"]},
-		{date: "2019/10/12", training: 2, students: ["ВВРЦ"]}
-	],
-	i, recordsRepeat = 3000, repeated = [];
-	
+ eventsCaptions = {
+  id:    {type: "auto"},
+  date:   {type: "date", format:{month: "long", year: "numeric", day: "numeric"}, language: "ru"},
+  training:  {type: "link", table: "trainings", to: "id", data: ":all"},
+  students:  {type: "link", table: "students", to: "rc", data: ":all", multiply: true}
+ },
+ 
+ 
+ studentsRows = [
+  {name: "Ахрипов Инал Николаевич", male: true, rc: "СБРЦ", age: 20},
+  {name: "Трохорова Татьяна Кизиловна", male: false, rc: "ВВРЦ", age: 20},
+  {name: "Колобанов Пётр Инанович", male: true, rc: "МСРЦ", age: 20},
+  {name: "Хлынова Арина Кареновна", male: false, rc: "МСРЦ", age: 20}
+ ],
+ trainingsRows = [
+  {name: "Базовые продажи", description: "Техника продаж для новичков"},
+  {name: "БУН", description: "Базовые управленческие навыки"},
+  {name: "Продвинутые продажи", description: "Техника продаж для профи"},
+ ],
+ eventsRows = [
+  {date: "2019/10/10", training: 2, students: ["СБРЦ", "ВВРЦ"]},
+  {date: "2019/10/11", training: 2, students: ["МСРЦ"]},
+  {date: "2019/10/12", training: 2, students: ["ВВРЦ"]}
+ ],
+ i, recordsRepeat = 3000, repeated = [];
+ 
 ;
 
 for (let i = 0; i < recordsRepeat; i++) {
-	repeated.push(...eventsRows)
+ repeated.push(...eventsRows)
 }
 base.addTable("students", studentsCaptions);
 base.addTable("trainings", trainingsCaptions);
@@ -71,14 +70,15 @@ base.table("events").rows.add(repeated);
 console.info( (performance.now() - start) / 1000 );
 
 console.log(base.table("events").rows.length)
-
+/* here an error for browser testing */
+allert("test");
 //console.log( base.table("events").getAll( (fixedRow, sourceRow) => fixedRow.students.some( (el) => el.male === false ) ) );
 //console.log( base.table("events").getAll((fixedRow, sourceRow) => fixedRow.students.some( (el) => /Тать/i.test(el.name) ) ) );
 //console.log( base.table("events").getAll((fixedRow, sourceRow) => fixedRow.students.some( (el) => el.id === 3 ) ) );
 //console.log( base.table("events").getAll() );
 
 
-/*		
+/*  
 base.table("pets").addRow({petType: "Рыбка", needs: "Water"});
 base.table("owners").addRow({name: "Смит"});
 base.table("purchases").addRow({date: new Date(), owner: 0});
@@ -86,6 +86,7 @@ console.log( base.table("purchases").get({columnName: "id", value: 0}) );
 */
 alert(base.about);
 
-	</script>
-</body>
+ 
+		</script>
+	</body>
 </html>
