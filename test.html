@@ -13,24 +13,24 @@ let
  base = new GCBase({name: "Trainings", version: 1, description: "Database of trainings and students."}),
 
  studentsCaptions = {
-  id:    {type: "auto"},
-  name: {type: "text"},
+  id:	{type: "auto"},
+  name:	{type: "text"},
   male: {type: "flag"},
-  rc:    {type: "text"},  
-  age:  {type: "number"} 
+  rc:	{type: "text"},  
+  age:	{type: "number"} 
  },
  
  trainingsCaptions = {
-  id:    {type: "auto"},
-  name:   {type: "text"},
-  description: {type: "text"}
+  id:			{type: "auto"},
+  name:			{type: "text"},
+  description:	{type: "text"}
  },
 
  eventsCaptions = {
-  id:    {type: "auto"},
-  date:   {type: "date", format:{month: "long", year: "numeric", day: "numeric"}, language: "ru"},
-  training:  {type: "link", table: "trainings", to: "id", data: ":all"},
-  students:  {type: "link", table: "students", to: "rc", data: ":all", multiply: true}
+  id:			{type: "auto"},
+  date:   		{type: "date", format:{month: "long", year: "numeric", day: "numeric"}, language: "ru"},
+  training:  	{type: "link", table: "trainings", to: "id", data: ":all"},
+  students:  	{type: "link", table: "students", to: "rc", data: ":all", multiply: true}
  },
  
  
