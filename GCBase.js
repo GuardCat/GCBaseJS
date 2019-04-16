@@ -48,7 +48,7 @@ class GCBase {
 	}
 	
 	stringifyCache() {
-		return GCBase.__export.bind(this.cachedTables);
+		return GCBase.__export.bind(this.cachedTables)();
 	}
 	
 	reparse(text) {
@@ -110,22 +110,33 @@ class GCBase {
 	}
 
 	recache() {
-		let length = Object.keys(this.__tables).length, key, errors = 0;
+		let 
+			length = Object.keys(this.__tables).length, 
+			key, 
+			errors = 0,
+			cacheOrder = [ ],
+			wrongLinkFlag = false
+		;
 
-		while(length) {
-			for(key in this.__tables) {
-				try {
-					this.table(key).recache( );
-					length--;
-				} catch(err) {
-					//window.console.error(key, err, errors);
-					errors++;
-					console.info(this.__tables);
-					continue;
+		if (!this._cacheOrder) {
+			while (cacheOrder.length !== Object.keys(this.__tables).length) {
+				for (key in this.__tables) {
+					wrongLinkFlag = false;
+					for (let i in this.__tables[key].__captions) {
+						if(this.__tables[key].__captions[i].type === "link") {
+							if ( !cacheOrder.some(el => el === this.__tables[key].__captions[i].table) ) { wrongLinkFlag = true; break;}
+							if ( !(this.__tables[key].__captions[i].table in this.__tables) ) throw new Error(`GCBase recache: wrong link ${this.__tables[key].__captions[i].table} in table ${key}`);
+						}
+					}
+					if ( !wrongLinkFlag && !cacheOrder.some(el => el === key) ) cacheOrder.push(key);
+					
 				}
-				if (errors >= Object.keys(this.__tables)) {console.error(this.__tables[key], key); throw new Error("GCBase recache: unknown error");}
 			}
+			this.__cacheOrder = cacheOrder;
 		}
+		
+		this.__cacheOrder.forEach( el => this.table(el).recache( ) );
+
 	}
 	
 	/*
