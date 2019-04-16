@@ -121,7 +121,7 @@ class GCBase {
 					errors++;
 					if (errors > Object.keys(this.__tables)) throw new Error("GCBase recache: unknown error");
 					continue;
-				}
+				}}
 			}
 		}
 	}
