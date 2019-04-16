@@ -119,12 +119,18 @@ class GCBase {
 		;
 
 		if (!this._cacheOrder) {
+			let wrongs = {};
 			while (cacheOrder.length !== Object.keys(this.__tables).length) {
 				for (key in this.__tables) {
 					wrongLinkFlag = false;
 					for (let i in this.__tables[key].__captions) {
 						if(this.__tables[key].__captions[i].type === "link") {
-							if ( !cacheOrder.some(el => el === this.__tables[key].__captions[i].table) ) { wrongLinkFlag = true; break;}
+							if ( !cacheOrder.some(el => el === this.__tables[key].__captions[i].table) ) { 
+								wrongLinkFlag = true;
+								if (wrongs[this.__tables[key].__captions[i].table]) throw new Error(`GCBase recache: wrong link ${this.__tables[key].__captions[i].table} in table ${key}`);
+								wrongs[this.__tables[key].__captions[i].table] = true;
+								break;
+							}
 							if ( !(this.__tables[key].__captions[i].table in this.__tables) ) throw new Error(`GCBase recache: wrong link ${this.__tables[key].__captions[i].table} in table ${key}`);
 						}
 					}
