@@ -48,7 +48,7 @@ class GCBase {
 	}
 	
 	stringifyCache() {
-		return GCBase.__export.bind(this.cachedTables)();
+		return GCBase.__export.bind(this.cachedTables)( );
 	}
 	
 	reparse(text) {
