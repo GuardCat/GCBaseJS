@@ -4,6 +4,7 @@
 /**
  * База данных
  * @constructor
+ * @require class: GCTable
  */
 class GCBase {
 	constructor(income) {
@@ -114,14 +115,15 @@ class GCBase {
 		while(length) {
 			for(key in this.__tables) {
 				try {
-					this.table(key).recache();
+					this.table(key).recache( );
 					length--;
 				} catch(err) {
-					window.console.log(key, err);
+					//window.console.error(key, err, errors);
 					errors++;
-					if (errors > Object.keys(this.__tables)) throw new Error("GCBase recache: unknown error");
+					console.info(this.__tables);
 					continue;
-				}}
+				}
+				if (errors >= Object.keys(this.__tables)) {console.error(this.__tables[key], key); throw new Error("GCBase recache: unknown error");}
 			}
 		}
 	}
@@ -244,6 +246,7 @@ class GCTable {
 			caption = this.captions[column];
 			switch (caption.type) {
 				case "link":
+					if(!this.base.__tables[caption.table]) throw new Error(`GCTable fix row: wrong link: "${caption.to}"`);
 					fixedRow[column] = {source: row[column], value: this.__valFromLink(caption, row[column], this.base.__tables[caption.table].__captions[caption.to], this.base.cachedTables[caption.table])};
 					break;				
 				case "date":
@@ -297,7 +300,6 @@ class GCTable {
 		this.base.cachedTables[this.name].__push( this.__fixRow(row) );
 		return this;
 	}
-	
     
 	/* Получает значение по ссылке. Важно: на вход подаётся обработанный массив строк целевой таблицы! */
 	__valFromLink(caption, key, targetCaption, targetTableRows) {
@@ -327,7 +329,6 @@ class GCTable {
 	}
 	
 }
-
 /* TODO:
 
 проверить ссылки на ссылки
