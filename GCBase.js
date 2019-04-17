@@ -111,10 +111,7 @@ class GCBase {
 
 	recache() {
 		let 
-			length = Object.keys(this.__tables).length, 
-			key, 
-			errors = 0,
-			cacheOrder = [ ],
+			key, cacheOrder = [ ],
 			wrongLinkFlag = false
 		;
 
