@@ -111,21 +111,22 @@ class GCBase {
 
 	recache() {
 		let
-			key, cacheOrder = [ ],
+			tableName, cacheOrder = [ ],
+			wrongs = { }, caption,
 			wrongLinkFlag = false
 		;
 
 		if (!this._cacheOrder) {
-			let wrongs = {};
 			while (cacheOrder.length !== Object.keys(this.__tables).length) {
-				for (key in this.__tables) {
+				for (tableName in this.__tables) {
 					wrongLinkFlag = false;
-					for (let i in this.__tables[key].__captions) {
-						if(this.__tables[key].__captions[i].type === "link") {
-							if ( !cacheOrder.some(el => el === this.__tables[key].__captions[i].table) ) {
+					for (let captionName in this.__tables[tableName].__captions) {
+						caption = this.__tables[tableName].__captions[captionName];
+						if(caption.type === "link") {
+							if ( !cacheOrder.some(el => el === caption.table) ) {
 								wrongLinkFlag = true;
-								if (wrongs[this.__tables[key].__captions[i].table]) throw new Error(`GCBase recache: wrong link ${this.__tables[key].__captions[i].table} in table ${key}`);
-								wrongs[this.__tables[key].__captions[i].table] = true;
+								if (caption.table) throw new Error(`GCBase recache: wrong link ${caption.table} in table ${tableName}`);
+								wrongs[caption.table] = true;
 								break;
 							}
 							if ( !(this.__tables[key].__captions[i].table in this.__tables) ) throw new Error(`GCBase recache: wrong link ${this.__tables[key].__captions[i].table} in table ${key}`);
@@ -201,8 +202,7 @@ class GCBase {
 		Проверяет объект на соответствие формату __data
 	*/
 	static checkDBData(data) {
-		if ( !(data && data.name && data.version && data.description) ) return false;
-		if ( typeof data.version !== "number" ) return false;
+		if ( !(data && data.name && data.version && data.description) || typeof data.version !== "number" ) return false;
 		return true;
 	}
 
