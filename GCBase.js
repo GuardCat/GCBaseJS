@@ -125,14 +125,14 @@ class GCBase {
 						if(caption.type === "link") {
 							if ( !cacheOrder.some(el => el === caption.table) ) {
 								wrongLinkFlag = true;
-								if (caption.table) throw new Error(`GCBase recache: wrong link ${caption.table} in table ${tableName}`);
+								if (wrongs[caption.table]) throw new Error(`GCBase recache: wrong link ${caption.table} in table ${tableName}`);
 								wrongs[caption.table] = true;
 								break;
 							}
-							if ( !(this.__tables[key].__captions[i].table in this.__tables) ) throw new Error(`GCBase recache: wrong link ${this.__tables[key].__captions[i].table} in table ${key}`);
+							if ( !(caption.table in this.__tables) ) throw new Error(`GCBase recache: wrong link ${caption.table} in table ${tableName}`);
 						}
 					}
-					if ( !wrongLinkFlag && !cacheOrder.some(el => el === key) ) cacheOrder.push(key);
+					if ( !wrongLinkFlag && !cacheOrder.some(el => el === tableName) ) cacheOrder.push(tableName);
 
 				}
 			}
