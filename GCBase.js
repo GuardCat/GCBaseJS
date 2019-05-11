@@ -244,7 +244,7 @@ class GCTable {
 
 		/* тюнинг rows, минимальная защита от шаловливых рук*/
 		this.rows.add = this.__addRow.bind(this);
-		this.rows.__push = this.rows.push; /* для внутреннего использования*/
+		this.rows.__push = Array.prototype.push; /* для внутреннего использования*/
 		this.rows.splice = this.rows.shift = this.rows.push = this.rows.unshift = this.rows.pop = undefined;
 
 	}
